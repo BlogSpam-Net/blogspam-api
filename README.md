@@ -39,6 +39,7 @@ I've ported several existing plugins and confirmed they pass the tests in the or
 
 The biggest difference in terms of code is that the existing nodejs codebase stores "bad" IPs in redis, and blocks them for 48hours.  Ideally I'd just skip that part.
 
+The existing code-base also stores the count of spam/ham comments in redis, on a per-site basis.  That isn't currently supported here either.  Oops.
 
 ## TODO
 
