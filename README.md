@@ -50,4 +50,11 @@ For the moment I've ignored both of those features.  The stats are useful to the
 
 ## TODO
 
-* Port more plugins
+* Port more plugins.
+* Breakout the code in `main.go` so we can add tests
+* Make redis optional
+* Lookup blacklisted IPs in redis.
+* The return values for "plugins" should be finer-grained:
+   * OK - This is valid comment and cease now
+   * Spam - this is spam, stop now
+   * Continue - Continue testing.
