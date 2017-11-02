@@ -58,3 +58,40 @@ For the moment I've ignored both of those features.  The stats are useful to the
    * OK - This is valid comment and cease now
    * Spam - this is spam, stop now
    * Continue - Continue testing.
+
+
+## Benchmarks
+
+Fake benchmarks:
+
+    $ cat ~/site.json
+    {"site": "http://example.com" }
+
+
+Localhost + golang:
+
+     $ ab -p ~/site.json -T application/json -c 10 -n 2000 http://localhost:9999/stats
+     Time taken for tests:   0.210 seconds
+     Complete requests:      2000
+     Failed requests:        0
+     Total transferred:      262000 bytes
+     Total body sent:        344000
+     HTML transferred:       46000 bytes
+     Requests per second:    9505.16 [#/sec] (mean)
+     Time per request:       1.052 [ms] (mean)
+     Time per request:       0.105 [ms] (mean, across all concurrent requests)
+
+Remote server + node.js - **NOTE** this is doing a quarter the the number of tests:
+
+     $ ab -p ~/site.json -T application/json -c 10 -n 500 http://test.blogspam.net:9999/stats
+     Time taken for tests:   85.771 seconds
+     Complete requests:      500
+     Failed requests:        0
+     Total transferred:      65000 bytes
+     Total body sent:        90000
+     HTML transferred:       11500 bytes
+     Requests per second:    5.83 [#/sec] (mean)
+     Time per request:       1715.421 [ms] (mean)
+     Time per request:       171.542 [ms] (mean, across all concurrent requests)
+
+I think that says it all...
