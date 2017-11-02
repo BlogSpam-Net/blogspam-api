@@ -22,11 +22,11 @@ func init() {
 //
 func validateLength(x Submission) string {
 
-	if len(x.Name) > 150 {
+	if len(x.Name) > 140 {
 		return ("The submitted 'name' is too long.")
 	}
 
-	if len(x.Subject) > 150 {
+	if len(x.Subject) > 140 {
 		return ("The submitted 'subject' is too long.")
 	}
 
