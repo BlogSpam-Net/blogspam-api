@@ -37,13 +37,14 @@ This repository contains a proof of concept - it launches a service, reads the J
 
 I've ported several existing plugins and confirmed they pass the tests in the original repositories test-suit, and added 100% golang test-coverage.
 
+I've also hardwired a redis-connection to localhost, which will store the state
+of spam/ham counts for each site - as well as globally.
 
 ## Missing Features
 
 The existing server uses redis to maintain state:
 
 * IPs that send "bad" comments will often be blacklisted for a period of hours.
-* We store the number of spam/ham comments, on a per-site basis, which can be retrieved.
 
 For the moment I've ignored both of those features.  The stats are useful to the site-owners, and myself, but I think we can live without them.
 

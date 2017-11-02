@@ -20,6 +20,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/go-redis/redis"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -128,6 +129,11 @@ type Plugins struct {
 var plugins []Plugins
 
 //
+// The global Redis client
+//
+var redisHandle *redis.Client = nil
+
+//
 // HTTP-Handler: Re-train input.  [NOP]
 //
 func ClassifyHandler(res http.ResponseWriter, req *http.Request) {
@@ -135,10 +141,103 @@ func ClassifyHandler(res http.ResponseWriter, req *http.Request) {
 }
 
 //
-// HTTP-Handler: Dump statistics.  [NOP]
+// HTTP-Handler: Dump statistics.
 //
 func StatsHandler(res http.ResponseWriter, req *http.Request) {
-	fmt.Fprintf(res, "{\"spam\":\"0\",\"ok\":\"0\",\"nop\":\"true\"}")
+	var (
+		status int
+		err    error
+	)
+	defer func() {
+		if nil != err {
+			http.Error(res, err.Error(), status)
+			// Don't spam stdout when running test-cases.
+			if flag.Lookup("test.v") == nil {
+				fmt.Printf("Error: %s\n", err.Error())
+			}
+		}
+	}()
+
+	//
+	// Ensure this was a POST-request
+	//
+	if req.Method != "POST" {
+		err = errors.New("Must be called via HTTP-POST")
+		status = http.StatusInternalServerError
+		return
+	}
+
+	//
+	// Decode the submitted JSON body
+	//
+	decoder := json.NewDecoder(req.Body)
+
+	//
+	// This is what we'll decode
+	//
+	var input Submission
+	err = decoder.Decode(&input)
+
+	//
+	// If decoding the JSON failed then we'll abort
+	//
+	if err != nil {
+		status = http.StatusInternalServerError
+		return
+	}
+
+	//
+	// Create a map for returning our results to the caller.
+	//
+	// We default to having zero for both counts.  This ensures
+	// we populate the return-value(s) in the event of an error.
+	//
+	ret := make(map[string]string)
+	ret["spam"] = "0"
+	ret["ok"] = "0"
+
+	//
+	// If we have a site then we're good
+	//
+	site := input.Site
+
+	//
+	// Get the spam-count, and assuming no error then we
+	// update our map.
+	//
+	if ( redisHandle != nil ) {
+		spam_count, err := redisHandle.Get(fmt.Sprintf("site-%s-spam", site)).Result()
+		if err != nil {
+			ret["error"] = err.Error()
+		} else {
+			ret["spam"] = spam_count
+		}
+	}
+
+	//
+	// Get the ham-count, and assuming no error then we
+	// update our map.
+	//
+	if ( redisHandle != nil ) {
+		ham_count, err := redisHandle.Get(fmt.Sprintf("site-%s-ok", site)).Result()
+		if err != nil {
+			ret["error"] = err.Error()
+		} else {
+			ret["ok"] = ham_count
+		}
+	}
+
+	//
+	// Convert this temporary hash to a JSON object we can return
+	//
+	jsonString, err := json.Marshal(ret)
+	if err != nil {
+		status = http.StatusInternalServerError
+		return
+	} else {
+		res.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(res, "%s", jsonString)
+	}
 }
 
 //
@@ -271,6 +370,18 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 		if len(result) > 0 {
 
 			//
+			// This was a spam comment, so we update our state
+			//
+			// * Global-state
+			//
+			// * Per-Site state
+			//
+			if ( redisHandle != nil ) {
+				redisHandle.Incr("global-spam")
+				redisHandle.Incr(fmt.Sprintf("site-%s-spam", input.Site))
+			}
+
+			//
 			// This plugin-test resulted in a spam result
 			//
 			ret := make(map[string]string)
@@ -298,6 +409,18 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 
 			return
 		}
+	}
+
+	//
+	// This was a valid comment, so we update our state
+	//
+	// * Global-state
+	//
+	// * Per-Site state
+	//
+	if ( redisHandle != nil ) {
+		redisHandle.Incr("global-ok")
+		redisHandle.Incr(fmt.Sprintf("site-%s-ok", input.Site))
 	}
 
 	//
@@ -436,5 +559,10 @@ func main() {
 	// 	}
 	// }
 
+	redisHandle = redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
 	serve(9999)
 }
