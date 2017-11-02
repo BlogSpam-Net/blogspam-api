@@ -19,13 +19,12 @@ func TestLinkTypesOK(t *testing.T) {
 	input := []string{"<a href=\"https://example.com\">test</a>",
 		"[url=https://exmapl.eocm]title[/url]",
 		"[link=https://moi.com/]steve[/link]:",
-		"[ \t]https?:/" }
-
+		"[ \t]https?:/"}
 
 	//
 	// Try them all
 	//
-	for _,i := range(input) {
+	for _, i := range input {
 		//
 		// Test a simple comment.
 		//
@@ -35,8 +34,6 @@ func TestLinkTypesOK(t *testing.T) {
 		}
 	}
 }
-
-
 
 //
 // Test that all methods are too much.

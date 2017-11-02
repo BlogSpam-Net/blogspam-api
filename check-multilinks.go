@@ -33,7 +33,7 @@ func checkLinkingTypes(x Submission) string {
 	patterns := []string{"<a href=\"https?:",
 		"\\[?url=https?:",
 		"\\[?link=https?:",
-		"[ \t]https?:/" }
+		"[ \t]https?:/"}
 
 	//
 	// Count of types we've found thus far
@@ -43,7 +43,7 @@ func checkLinkingTypes(x Submission) string {
 	//
 	// For each pattern.
 	//
-	for _,p := range( patterns ) {
+	for _, p := range patterns {
 
 		// Look for matches
 		r := regexp.MustCompile(p)
@@ -51,11 +51,10 @@ func checkLinkingTypes(x Submission) string {
 		index := suffixarray.New([]byte(x.Comment))
 		matches := index.FindAllIndex(r, -1)
 
-		if ( len(matches) > 0 ) {
+		if len(matches) > 0 {
 			count += 1
 		}
 	}
-
 
 	if count >= 3 {
 		return ("Multiple linking strategies")
