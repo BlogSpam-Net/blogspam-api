@@ -98,12 +98,12 @@ type Plugins struct {
 	//
 	// The author of the plugin.
 	//
-	Author      string
+	Author string
 
 	//
 	// The name of the plugin.
 	//
-	Name        string
+	Name string
 
 	//
 	// A description of the plugin.
@@ -113,10 +113,8 @@ type Plugins struct {
 	//
 	// The function to invoke to use the plugin.
 	//
-	Test        PluginTest
+	Test PluginTest
 }
-
-
 
 //
 // The global list of plugins we have loaded.
@@ -142,7 +140,6 @@ func ClassifyHandler(res http.ResponseWriter, req *http.Request) {
 func StatsHandler(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(res, "{\"spam\":\"0\",\"ok\":\"0\",\"nop\":\"true\"}")
 }
-
 
 //
 // Our spam-test handler
@@ -249,7 +246,7 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 			//
 			// TODO: Regexp-Check
 			//
-			if ( strings.Contains(name, ex) || name == ex ) {
+			if strings.Contains(name, ex) || name == ex {
 				if flag.Lookup("test.v") == nil {
 					fmt.Printf("\tPlugin skipped: %s\n", name)
 				}

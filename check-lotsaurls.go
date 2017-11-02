@@ -5,10 +5,10 @@
 package main
 
 import (
-	"regexp"
-	"strings"
-	"strconv"
 	"index/suffixarray"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 func init() {
@@ -62,14 +62,13 @@ func checkHyperlinkCounts(x Submission) string {
 	//
 	// Now convert our (possibly updated) max value
 	//
-	max,err := strconv.Atoi(tmp["max-links"])
-	if ( err != nil ) {
+	max, err := strconv.Atoi(tmp["max-links"])
+	if err != nil {
 		return "Failed to parse max-links as a number"
 	}
-	if ( max <= 0 ) {
+	if max <= 0 {
 		return "Failed to parse max-links as a positive number"
 	}
-
 
 	//
 	// Look for hyperlinks
@@ -82,8 +81,8 @@ func checkHyperlinkCounts(x Submission) string {
 	index := suffixarray.New([]byte(x.Comment))
 	count := index.FindAllIndex(r, -1)
 
-	if ( len(count) > max ) {
-		return("Too many hyperlinks" )
+	if len(count) > max {
+		return ("Too many hyperlinks")
 	}
 	//
 	// All OK

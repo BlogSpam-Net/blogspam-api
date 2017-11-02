@@ -53,7 +53,7 @@ func TestHyperLinkDefaults(t *testing.T) {
 	//
 	input := "http://steve.com/ http://steve.com/ http://steve.com/ http://steve.com/ http://steve.com/ http://steve.com/ http://steve.com/ http://steve.com/ http://steve.com/ http://steve.com/ http://steve.com/ http://steve.com/ http://steve.com/"
 
-	result := checkHyperlinkCounts(Submission{Comment: input })
+	result := checkHyperlinkCounts(Submission{Comment: input})
 	if len(result) == 0 {
 		t.Errorf("Unexpected response: '%v'", result)
 	}

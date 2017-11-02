@@ -64,17 +64,17 @@ func checkBlacklist(x Submission) string {
 	//
 	// If we have some blacklisted IPs..
 	//
-	for ip,_ := range tmp {
+	for ip, _ := range tmp {
 
 		// Parse the network
 		_, subnet, err := net.ParseCIDR(ip)
-		if ( err != nil ) {
-			return( fmt.Sprintf( "Failed to parse CIDR %s", ip ) )
+		if err != nil {
+			return (fmt.Sprintf("Failed to parse CIDR %s", ip))
 		}
 
 		// Is it in there?
-		if ( subnet.Contains( source ) ) {
-			return( "IP blacklisted" )
+		if subnet.Contains(source) {
+			return ("IP blacklisted")
 		}
 	}
 
