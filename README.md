@@ -1,4 +1,4 @@
-# BlogSpam v3
+# Golang BlogSpam Server
 
 I'm in the process of cutting down on the number of machines I host,
 and one of the casualities is the [BlogSpam.net](https://blogspam.net/) service.
@@ -33,15 +33,20 @@ I'm not going to change this basic setup, so really I need a golang HTTP-server 
 
 ## Proof of Concept
 
-This repository contains a proof of concept - it launches a service, reads the JSON-bodies, and invokes plugins.
+This repository contains a proof of concept - it launches a service, reads the JSON-bodies, and invokes plugins against those submissions.
 
 I've ported several existing plugins and confirmed they pass the tests in the original repositories test-suit, and added 100% golang test-coverage.
 
-The biggest difference in terms of code is that the existing nodejs codebase stores "bad" IPs in redis, and blocks them for 48hours.  Ideally I'd just skip that part.
 
-The existing code-base also stores the count of spam/ham comments in redis, on a per-site basis.  That isn't currently supported here either.  Oops.
+## Missing Features
+
+The existing server uses redis to maintain state:
+
+* IPs that send "bad" comments will often be blacklisted for a period of hours.
+* We store the number of spam/ham comments, on a per-site basis, which can be retrieved.
+
+For the moment I've ignored both of those features.  The stats are useful to the site-owners, and myself, but I think we can live without them.
 
 ## TODO
 
 * Port more plugins
-* Make a blog post
