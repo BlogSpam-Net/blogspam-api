@@ -16,7 +16,7 @@ func TestNonSpammer(t *testing.T) {
 	//
 	// Test several IPs
 	//
-	inputs := []string{"127.0.0.1",	"192.168.0.1" }
+	inputs := []string{"127.0.0.1", "192.168.0.1"}
 
 	for _, input := range inputs {
 

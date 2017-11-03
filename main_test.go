@@ -103,7 +103,7 @@ func TestBogusJSON(t *testing.T) {
 // we can exclude that.
 //
 func TestSpamExclusion(t *testing.T) {
-	body := []byte("{\"options\":\"exclude=name\",\"comment\":\"Moi Kissa\",\"name\":\"http://example.com\"}")
+	body := []byte("{\"options\":\"exclude=name\",\"comment\":\"Moi Kissa\",\"name\":\"http://example.com\", \"site\":\"example.com\", \"ip\": \"127.0.0.1\"}")
 
 	req, err := http.NewRequest("POST", "/", bytes.NewReader(body))
 	if err != nil {

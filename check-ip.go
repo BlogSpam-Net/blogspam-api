@@ -67,7 +67,7 @@ func checkBlacklist(x Submission) (PluginResult, string) {
 	for ip := range tmp {
 
 		// Only parse the CIDR if it looks like one.
-		if strings.Contains( ip, "/" ) {
+		if strings.Contains(ip, "/") {
 			// Parse the network
 			_, subnet, err := net.ParseCIDR(ip)
 			if err != nil {
@@ -81,7 +81,7 @@ func checkBlacklist(x Submission) (PluginResult, string) {
 		} else {
 
 			// Is it a literal match?
-			if x.IP == ip  {
+			if x.IP == ip {
 				return Spam, "IP blacklisted"
 			}
 		}

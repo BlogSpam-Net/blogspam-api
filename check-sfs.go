@@ -59,12 +59,12 @@ func checkSFSBlacklist(x Submission) (PluginResult, string) {
 	//
 	// Make the request
 	//
-	response, err := netClient.Get( url )
+	response, err := netClient.Get(url)
 
 	//
 	// Handle error
 	//
-	if ( err != nil ) {
+	if err != nil {
 		fmt.Printf("HTTP-Error from %s - %s", url, err)
 		return Error, err.Error()
 	}
@@ -72,17 +72,17 @@ func checkSFSBlacklist(x Submission) (PluginResult, string) {
 	//
 	// Ensure we close the body
 	//
-        defer response.Body.Close()
-        contents, err := ioutil.ReadAll(response.Body)
-        if err != nil {
+	defer response.Body.Close()
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
 		fmt.Printf("HTTP-Error from %s - %s", url, err)
-		return Error,err.Error()
-        }
+		return Error, err.Error()
+	}
 
 	//
 	// Does it appear?
 	//
-	if ( strings.Contains( string(contents), "<appears>yes</appears>" ) ) {
+	if strings.Contains(string(contents), "<appears>yes</appears>") {
 		return Spam, "Listed in StopForumSpam.com"
 	}
 

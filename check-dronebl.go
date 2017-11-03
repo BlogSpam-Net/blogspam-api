@@ -62,11 +62,11 @@ func checkDroneBlacklist(x Submission) (PluginResult, string) {
 	// No reply?  Not spam
 	//
 	if len(reply) == 0 {
-		return Undecided, "";
+		return Undecided, ""
 	}
 
 	//
 	// We got a listing, so we're SPAM.
 	//
-	return Spam, fmt.Sprintf( "%s is listed in dronebl.org", x.IP )
+	return Spam, fmt.Sprintf("%s is listed in dronebl.org", x.IP)
 }
