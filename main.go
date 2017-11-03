@@ -245,11 +245,11 @@ func StatsHandler(res http.ResponseWriter, req *http.Request) {
 	// update our map.
 	//
 	if redisHandle != nil {
-		spam_count, err := redisHandle.Get(fmt.Sprintf("site-%s-spam", site)).Result()
+		spamCount, err := redisHandle.Get(fmt.Sprintf("site-%s-spam", site)).Result()
 		if err != nil {
 			ret["error"] = err.Error()
 		} else {
-			ret["spam"] = spam_count
+			ret["spam"] = spamCount
 		}
 	}
 
@@ -258,11 +258,11 @@ func StatsHandler(res http.ResponseWriter, req *http.Request) {
 	// update our map.
 	//
 	if redisHandle != nil {
-		ham_count, err := redisHandle.Get(fmt.Sprintf("site-%s-ok", site)).Result()
+		hamCount, err := redisHandle.Get(fmt.Sprintf("site-%s-ok", site)).Result()
 		if err != nil {
 			ret["error"] = err.Error()
 		} else {
-			ret["ok"] = ham_count
+			ret["ok"] = hamCount
 		}
 	}
 
@@ -273,10 +273,13 @@ func StatsHandler(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		status = http.StatusInternalServerError
 		return
-	} else {
-		res.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(res, "%s", jsonString)
 	}
+
+	//
+	// Send it.
+	//
+	res.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(res, "%s", jsonString)
 }
 
 //
