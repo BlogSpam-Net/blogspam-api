@@ -517,7 +517,7 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 
 			// Nop
 			fmt.Printf("Error running plugin: %s\n\t%s\n",
-				obj.Name, detail )
+				obj.Name, detail)
 		}
 	}
 
