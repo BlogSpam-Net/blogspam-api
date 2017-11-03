@@ -18,9 +18,12 @@ func TestMXHam(t *testing.T) {
 
 	for _, input := range inputs {
 
-		result := validateMX(Submission{Email: input})
-		if len(result) != 0 {
+		result, detail := validateMX(Submission{Email: input})
+		if result != Undecided {
 			t.Errorf("Unexpected response: '%v'", result)
+		}
+		if len(detail) != 0 {
+			t.Errorf("Unexpected response: '%v'", detail)
 		}
 	}
 }
@@ -35,9 +38,12 @@ func TestMXSPAM(t *testing.T) {
 
 	for _, input := range inputs {
 
-		result := validateMX(Submission{Email: input})
-		if len(result) == 0 {
+		result, detail := validateMX(Submission{Email: input})
+		if result != Spam {
 			t.Errorf("Unexpected response: '%v'", result)
+		}
+		if len(detail) == 0 {
+			t.Errorf("Unexpected response: '%v'", detail)
 		}
 	}
 }

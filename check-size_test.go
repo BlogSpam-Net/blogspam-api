@@ -14,10 +14,13 @@ func TestSizeHam(t *testing.T) {
 	//
 	// Test a simple comment.
 	//
-	result := validateEmail(Submission{Comment: "I like to eat cakes",
+	result, detail := validateEmail(Submission{Comment: "I like to eat cakes",
 		Options: "min-size=1,max-size=100"})
-	if len(result) != 0 {
+	if result != Undecided {
 		t.Errorf("Unexpected response: '%v'", result)
+	}
+	if len(detail) != 0 {
+		t.Errorf("Unexpected response: '%v'", detail)
 	}
 }
 
@@ -36,12 +39,15 @@ func TestSizeBrokenOptions(t *testing.T) {
 
 	for _, input := range inputs {
 
-		result := validateSize(Submission{Comment: "Foo, bar", Options: input})
-		if len(result) == 0 {
-			t.Errorf("Unexpected response: '%v'", result)
+		result, detail := validateSize(Submission{Comment: "Foo, bar", Options: input})
+		if result != Error {
+			t.Errorf("Unexpected response '%v'", result)
 		}
-		if !strings.Contains(result, "Failed to parse") {
-			t.Errorf("Unexpected response: '%v'", result)
+		if len(detail) == 0 {
+			t.Errorf("Unexpected response: '%v'", detail)
+		}
+		if !strings.Contains(detail, "Failed to parse") {
+			t.Errorf("Unexpected response: '%v'", detail)
 		}
 	}
 }
@@ -59,13 +65,16 @@ func TestSizeTooSmall(t *testing.T) {
 
 	for _, input := range inputs {
 
-		result := validateSize(Submission{Comment: input,
+		result, detail := validateSize(Submission{Comment: input,
 			Options: "min-size=100"})
-		if len(result) == 0 {
+		if result != Spam {
 			t.Errorf("Unexpected response: '%v'", result)
 		}
-		if !strings.Contains(result, "minimum size") {
-			t.Errorf("Unexpected response: '%v'", result)
+		if len(detail) == 0 {
+			t.Errorf("Unexpected response: '%v'", detail)
+		}
+		if !strings.Contains(detail, "minimum size") {
+			t.Errorf("Unexpected response: '%v'", detail)
 		}
 	}
 }
@@ -83,13 +92,16 @@ func TestSizeTooLarge(t *testing.T) {
 
 	for _, input := range inputs {
 
-		result := validateSize(Submission{Comment: input,
+		result, detail := validateSize(Submission{Comment: input,
 			Options: "max-size=10"})
-		if len(result) == 0 {
+		if result != Spam {
 			t.Errorf("Unexpected response: '%v'", result)
 		}
-		if !strings.Contains(result, "maximum size") {
-			t.Errorf("Unexpected response: '%v'", result)
+		if len(detail) == 0 {
+			t.Errorf("Unexpected response: '%v'", detail)
+		}
+		if !strings.Contains(detail, "maximum size") {
+			t.Errorf("Unexpected response: '%v'", detail)
 		}
 	}
 }

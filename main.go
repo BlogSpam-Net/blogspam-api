@@ -120,7 +120,6 @@ const (
 //
 type PluginTest func(Submission) (PluginResult, string)
 
-
 //
 // A structure to describe each known-plugin.
 //
@@ -146,7 +145,6 @@ type Plugins struct {
 	Test PluginTest
 }
 
-
 //
 // The global list of plugins we have loaded.
 //
@@ -162,8 +160,6 @@ var plugins []Plugins
 // The global Redis client, if redis is enabled.
 //
 var redisHandle *redis.Client = nil
-
-
 
 //
 // HTTP-Handler: Re-train input.  [NOP]

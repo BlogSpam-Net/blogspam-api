@@ -14,10 +14,13 @@ func TestLengthHam(t *testing.T) {
 	//
 	// Test a simple comment.
 	//
-	result := validateLength(Submission{Name: "Steve Kemp",
+	result, detail := validateLength(Submission{Name: "Steve Kemp",
 		Subject: "Hello, world!"})
-	if len(result) != 0 {
+	if result != Undecided {
 		t.Errorf("Unexpected response: '%v'", result)
+	}
+	if len(detail) != 0 {
+		t.Errorf("Unexpected response: '%v'", detail)
 	}
 }
 
@@ -30,12 +33,15 @@ func TestLengthName(t *testing.T) {
 	for len(name) < 200 {
 		name = name + " "
 	}
-	result := validateLength(Submission{Name: name})
-	if len(result) == 0 {
+	result, detail := validateLength(Submission{Name: name})
+	if result != Spam {
 		t.Errorf("Unexpected response: '%v'", result)
 	}
-	if !strings.Contains(result, "'name'") {
-		t.Errorf("Unexpected response: '%v'", result)
+	if len(detail) == 0 {
+		t.Errorf("Unexpected response: '%v'", detail)
+	}
+	if !strings.Contains(detail, "'name'") {
+		t.Errorf("Unexpected response: '%v'", detail)
 	}
 }
 
@@ -48,11 +54,14 @@ func TestLengthSubject(t *testing.T) {
 	for len(subject) <= 200 {
 		subject = subject + " "
 	}
-	result := validateLength(Submission{Subject: subject})
-	if len(result) == 0 {
+	result, detail := validateLength(Submission{Subject: subject})
+	if result != Spam {
 		t.Errorf("Unexpected response: '%v'", result)
 	}
-	if !strings.Contains(result, "'subject'") {
-		t.Errorf("Unexpected response: '%v'", result)
+	if len(detail) == 0 {
+		t.Errorf("Unexpected response: '%v'", detail)
+	}
+	if !strings.Contains(detail, "'subject'") {
+		t.Errorf("Unexpected response: '%v'", detail)
 	}
 }

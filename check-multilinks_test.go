@@ -28,9 +28,12 @@ func TestLinkTypesOK(t *testing.T) {
 		//
 		// Test a simple comment.
 		//
-		result := checkLinkingTypes(Submission{Comment: i})
-		if len(result) != 0 {
+		result, detail := checkLinkingTypes(Submission{Comment: i})
+		if result != Undecided {
 			t.Errorf("Unexpected response: '%v'", result)
+		}
+		if len(detail) != 0 {
+			t.Errorf("Unexpected response: '%v'", detail)
 		}
 	}
 }
@@ -45,8 +48,11 @@ func TestLinkTypesSpam(t *testing.T) {
 	//
 	input := "<a href=\"https://steve.fi/\">Steve Kemp</a>, [url=http://moi.kisssa]Finnihs[/url]  http://bare.link.com/"
 
-	result := checkLinkingTypes(Submission{Comment: input})
-	if len(result) == 0 {
+	result, detail := checkLinkingTypes(Submission{Comment: input})
+	if result != Spam {
 		t.Errorf("Unexpected response: '%v'", result)
+	}
+	if len(detail) == 0 {
+		t.Errorf("Unexpected response: '%v'", detail)
 	}
 }
