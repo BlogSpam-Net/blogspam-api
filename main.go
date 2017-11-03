@@ -166,7 +166,7 @@ var plugins []Plugins
 //
 // The global Redis client, if redis is enabled.
 //
-var redisHandle *redis.Client = nil
+var redisHandle *redis.Client
 
 //
 // ClassifyHandler is a HTTP-Handler which should re-train the given input.
@@ -362,7 +362,9 @@ func SendOKResult(res http.ResponseWriter, input Submission) {
 }
 
 //
-// Our spam-test handler
+// SpamTestHandler is the meant of our server, it reads incoming
+// JSON submissions and invokes plugins to determine if the submission
+// represented a SPAM comment.
 //
 // Parse the incoming JSON-structure, and if there are no errors
 // in doing so then test the comment with all known plugins.
@@ -524,7 +526,7 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 }
 
 //
-// Our plugin-list handler
+// PluginListHandler is a HTTP-handler to export our list of known-plugins.
 //
 func PluginListHandler(res http.ResponseWriter, req *http.Request) {
 	var (
@@ -664,7 +666,8 @@ func main() {
 			Password: "", // no password set
 			DB:       0,  // use default DB
 		})
-
+	} else {
+		redisHandle = nil
 	}
 
 	//
