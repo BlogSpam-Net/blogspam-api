@@ -23,7 +23,7 @@ func init() {
 func checkLinkName(x Submission) (PluginResult, string) {
 	if strings.HasPrefix(strings.ToLower(x.Name), "http") {
 		return Spam, "Hyperlink detected in name-field"
-	} else {
-		return Undecided, ""
 	}
+
+	return Undecided, ""
 }
