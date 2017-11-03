@@ -473,7 +473,7 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 		for _, ex := range exclude {
 
 			//
-			// TODO: Regexp-Check
+			// Look for this plugin being excluded.
 			//
 			if strings.Contains(name, ex) || name == ex {
 				if flag.Lookup("test.v") == nil {
@@ -495,7 +495,7 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 		if result == Spam {
 			//
 			// If the plugin-method decided this submission was
-			// SPAM then we immediately reutrn that result to the
+			// SPAM then we immediately return that result to the
 			// caller of our service.
 			//
 			SendSpamResult(res, input, obj, detail)
@@ -517,7 +517,8 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 		if result == Error {
 
 			// Nop
-
+			fmt.Printf("Error running plugin: %s\n\t%s\n",
+				obj.Name, detail )
 		}
 	}
 
@@ -645,7 +646,7 @@ func main() {
 	//
 	// Host/Port for binding upon
 	//
-	host := flag.String("host", "0.0.0.0", "The IP to bind upon")
+	host := flag.String("host", "127.0.0.1", "The IP to bind upon")
 	port := flag.Int("port", 9999, "The port number to listen upon")
 
 	//
