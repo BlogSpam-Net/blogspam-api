@@ -1,3 +1,8 @@
+[![Travis CI](https://img.shields.io/travis/skx/golang-blogspam-server/master.svg?style=flat-square)](https://travis-ci.org/skx/golang-blogspam-server)
+[![Go Report Card](https://goreportcard.com/badge/github.com/skx/golang-blogspam-server)](https://goreportcard.com/report/github.com/skx/puppet-summary)
+[![license](https://img.shields.io/github/license/skx/golang-blogspam-server.svg)](https://github.com/skx/golang-blogspam-server/blob/master/LICENSE)
+
+
 # Golang BlogSpam Server
 
 I'm in the process of cutting down on the number of machines I host,
