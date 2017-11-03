@@ -82,15 +82,15 @@ func validateMandatory(x Submission) string {
 			f := s.Field(i)
 
 			// The name/value of the field
-			field_name := typeOfT.Field(i).Name
-			field_val := fmt.Sprintf("%s", f.Interface())
+			fieldName := typeOfT.Field(i).Name
+			fieldVal := fmt.Sprintf("%s", f.Interface())
 
 			// Is this the field we're looking for?
-			if strings.EqualFold(field, field_name) {
+			if strings.EqualFold(field, fieldName) {
 
 				// Then raise an error if it is empty
-				if len(field_val) < 1 {
-					return fmt.Sprintf("Field %s is missing", field_name)
+				if len(fieldVal) < 1 {
+					return fmt.Sprintf("Field %s is missing", fieldName)
 				}
 			}
 		}
