@@ -115,7 +115,8 @@ const (
 )
 
 //
-// The SPAM-testing method which is implemented by each plugin.
+// PluginTest is the function which each plugin implements to check
+// an incoming Submission instance for SPAM.
 //
 // This function is given a Submission structure and should return
 // one of the enum-results noted above, as well as an optional detail
@@ -168,14 +169,17 @@ var plugins []Plugins
 var redisHandle *redis.Client = nil
 
 //
-// HTTP-Handler: Re-train input.  [NOP]
+// ClassifyHandler is a HTTP-Handler which should re-train the given input.
+//
+// However it is not implemented.
 //
 func ClassifyHandler(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(res, "OK")
 }
 
 //
-// HTTP-Handler: Dump statistics.
+// StatsHandler is a HTTP-handler which should return the per-site
+// statistics to the caller for the given site.
 //
 func StatsHandler(res http.ResponseWriter, req *http.Request) {
 	var (
@@ -276,7 +280,7 @@ func StatsHandler(res http.ResponseWriter, req *http.Request) {
 }
 
 //
-// Inform the caller of a SPAM result.
+// SendSpamResult informs the caller of a SPAM result.
 //
 // Bump our global and per-site count, if redis is available.
 //
@@ -313,13 +317,13 @@ func SendSpamResult(res http.ResponseWriter, input Submission, plugin Plugins, d
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
-	} else {
-		//
-		// Send to the caller.
-		//
-		res.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(res, "%s", jsonString)
 	}
+
+	//
+	// Send to the caller.
+	//
+	res.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(res, "%s", jsonString)
 
 	//
 	// Log to STDOUT if we're not running tests.
@@ -331,7 +335,7 @@ func SendSpamResult(res http.ResponseWriter, input Submission, plugin Plugins, d
 }
 
 //
-// Send OK result to the caller.
+// SendOKResult tells the caller their submission was not Spam.
 //
 // Bump our global and per-site count, if redis is available.
 //
