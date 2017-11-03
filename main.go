@@ -1,13 +1,12 @@
 //
-// This is a simple proof-of-concept port of theBlogSpam.net API to golang.
+// The BlogSpam.net API, written in golang.
 //
 // * We receive a JSON POST which we'll convert into a simple structure.
-//
 // * Then we run a bunch of "plugins" over the submission.
-//
 // * If any single plugin decides the comment is spam, we drop it.
-//
 // * Otherwise we're all OK.
+//
+// This is a bit ropy.
 //
 // Steve
 // --
