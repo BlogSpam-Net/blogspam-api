@@ -64,7 +64,7 @@ func checkBlacklist(x Submission) (PluginResult, string) {
 	//
 	// If we have some blacklisted IPs..
 	//
-	for ip, _ := range tmp {
+	for ip := range tmp {
 
 		// Parse the network
 		_, subnet, err := net.ParseCIDR(ip)

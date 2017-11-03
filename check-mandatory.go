@@ -65,7 +65,7 @@ func validateMandatory(x Submission) string {
 	// There __must__ be a better way of doing this, by looking
 	// at the subject field with reflection.
 	//
-	for field, _ := range tmp {
+	for field := range tmp {
 
 		//
 		// Get all the fields of the structure, via reflection
