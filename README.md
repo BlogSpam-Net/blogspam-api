@@ -1,6 +1,6 @@
-[![Travis CI](https://img.shields.io/travis/skx/golang-blogspam-server/master.svg?style=flat-square)](https://travis-ci.org/skx/golang-blogspam-server)
-[![Go Report Card](https://goreportcard.com/badge/github.com/skx/golang-blogspam-server)](https://goreportcard.com/report/github.com/skx/puppet-summary)
-[![license](https://img.shields.io/github/license/skx/golang-blogspam-server.svg)](https://github.com/skx/golang-blogspam-server/blob/master/LICENSE)
+[![Travis CI](https://img.shields.io/travis/skx/golang-blogspam/master.svg?style=flat-square)](https://travis-ci.org/skx/golang-blogspam)
+[![Go Report Card](https://goreportcard.com/badge/github.com/skx/golang-blogspam)](https://goreportcard.com/report/github.com/skx/golang-blogspam)
+[![license](https://img.shields.io/github/license/skx/golang-blogspam.svg)](https://github.com/skx/golang-blogspam/blob/master/LICENSE)
 
 
 # Golang BlogSpam Server
