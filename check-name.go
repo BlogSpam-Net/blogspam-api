@@ -20,10 +20,10 @@ func init() {
 
 }
 
-func checkLinkName(x Submission) string {
+func checkLinkName(x Submission) (PluginResult, string) {
 	if strings.HasPrefix(strings.ToLower(x.Name), "http") {
-		return "Hyperlink detected in name-field"
+		return Spam, "Hyperlink detected in name-field"
 	} else {
-		return ""
+		return Undecided, ""
 	}
 }

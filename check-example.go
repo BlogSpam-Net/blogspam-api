@@ -24,13 +24,13 @@ func init() {
 //
 // Test that the email-field is non-empty and contains a non-example entry.
 //
-func validateEmail(x Submission) string {
+func validateEmail(x Submission) (PluginResult, string) {
 
 	//
 	// If we have no email-address we cannot do a test
 	//
 	if len(x.Email) <= 0 {
-		return ""
+		return Undecided, ""
 	}
 
 	//
@@ -48,8 +48,8 @@ func validateEmail(x Submission) string {
 		// Does it start with example?
 		//
 		if strings.HasPrefix(strings.ToLower(match[1]), "example.") {
-			return ("Example-based email-address")
+			return Spam, "Example-based email-address"
 		}
 	}
-	return ""
+	return Undecided, ""
 }

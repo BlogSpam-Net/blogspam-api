@@ -25,7 +25,7 @@ func init() {
 //
 // Look for multiple linking strategies
 //
-func checkLinkingTypes(x Submission) string {
+func checkLinkingTypes(x Submission) (PluginResult, string) {
 
 	//
 	// The things we're looking for
@@ -57,11 +57,11 @@ func checkLinkingTypes(x Submission) string {
 	}
 
 	if count >= 3 {
-		return ("Multiple linking strategies")
+		return Spam, "Multiple linking strategies"
 	}
 
 	//
 	// All OK
 	//
-	return ""
+	return Undecided, ""
 }

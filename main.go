@@ -85,12 +85,41 @@ type Submission struct {
 }
 
 //
-// The spam-testing method
+//  The result of calling a plugin.
+//
+//  Each plugin will return a result which is "spam", "ham", "undecided",
+// or error.  These are defined next.
+//
+type PluginResult int
+
+//
+//  There are several possible plugin-results:
+//
+//   Spam:
+//    Stop processing and inform the caller.
+//   Ham:
+//    Stop processing and inform the caller.
+//   Undecided:
+//    Continue running further plugins.
+//   Error:
+//    Internal error running a plugin.
+//
+const (
+	Spam PluginResult = iota
+	Ham
+	Undecided
+	Error
+)
+
+//
+// The SPAM-testing method which is implemented by each plugin.
 //
 // This function is given a Submission structure and should return
-// nil if the submission looks OK, otherwise an error-string
+// one of the enum-results noted above, as well as an optional detail
+// field in the case of a SPAM-result.
 //
-type PluginTest func(Submission) string
+type PluginTest func(Submission) (PluginResult, string)
+
 
 //
 // A structure to describe each known-plugin.
@@ -117,6 +146,7 @@ type Plugins struct {
 	Test PluginTest
 }
 
+
 //
 // The global list of plugins we have loaded.
 //
@@ -129,9 +159,11 @@ type Plugins struct {
 var plugins []Plugins
 
 //
-// The global Redis client
+// The global Redis client, if redis is enabled.
 //
 var redisHandle *redis.Client = nil
+
+
 
 //
 // HTTP-Handler: Re-train input.  [NOP]
@@ -190,7 +222,8 @@ func StatsHandler(res http.ResponseWriter, req *http.Request) {
 	// Create a map for returning our results to the caller.
 	//
 	// We default to having zero for both counts.  This ensures
-	// we populate the return-value(s) in the event of an error.
+	// we populate the return-value(s) in the event of an error,
+	// or if redis is disabled
 	//
 	ret := make(map[string]string)
 	ret["spam"] = "0"
@@ -241,10 +274,94 @@ func StatsHandler(res http.ResponseWriter, req *http.Request) {
 }
 
 //
+// Inform the caller of a SPAM result.
+//
+// Bump our global and per-site count, if redis is available.
+//
+func SendSpamResult(res http.ResponseWriter, input Submission, plugin Plugins, detail string) {
+
+	if redisHandle != nil {
+		//
+		// Bump the global count of SPAM.
+		//
+		redisHandle.Incr("global-spam")
+
+		//
+		// Bump the per-site count of SPAM.
+		//
+		redisHandle.Incr(fmt.Sprintf("site-%s-spam", input.Site))
+	}
+
+	//
+	// This plugin-test resulted in a spam result, and we'll
+	// return that to the caller as JSON.
+	//
+	// Create a map to hold the details for now.
+	//
+	ret := make(map[string]string)
+	ret["result"] = "SPAM"
+	ret["blocker"] = plugin.Name
+	ret["reason"] = detail
+	ret["version"] = "2.0"
+
+	//
+	// Covert the temporary hash to a JSON-object.
+	//
+	jsonString, err := json.Marshal(ret)
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusInternalServerError)
+		return
+	} else {
+		//
+		// Send to the caller.
+		//
+		res.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(res, "%s", jsonString)
+	}
+
+	//
+	// Log to STDOUT if we're not running tests.
+	//
+	if flag.Lookup("test.v") == nil {
+		fmt.Printf("\nXXXX SPAM - %s: %s\n", plugin.Name, detail)
+	}
+
+}
+
+//
+// Send OK result to the caller.
+//
+// Bump our global and per-site count, if redis is available.
+//
+func SendOKResult(res http.ResponseWriter, input Submission) {
+
+	if redisHandle != nil {
+		//
+		// Bump the global Ham-count
+		//
+		redisHandle.Incr("global-ok")
+
+		//
+		// Bump the per-site Ham-count
+		//
+		redisHandle.Incr(fmt.Sprintf("site-%s-ok", input.Site))
+	}
+
+	//
+	// Send the result to the caller.
+	//
+	res.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(res, "{\"result\":\"OK\", \"version\":\"3.0\"}")
+
+}
+
+//
 // Our spam-test handler
 //
 // Parse the incoming JSON-structure, and if there are no errors
 // in doing so then test the comment with all known plugins.
+//
+// Once complete send the appropriate result to the caller.
 //
 func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 	var (
@@ -290,7 +407,8 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	//
-	// If we decoded then pretty-print it - unless running `make test`.
+	// If we decoded then pretty-print it to STDOUT,
+	// unless we're running our tests.
 	//
 	if flag.Lookup("test.v") == nil {
 		fmt.Printf("\t%+v\n", input)
@@ -327,7 +445,8 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	//
-	// Now we invoke each known-plugin
+	// Now we invoke each known-plugin, unless we're to exclude
+	// any specific one.
 	//
 	for _, obj := range plugins {
 
@@ -358,76 +477,44 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 		}
 
 		//
-		// Call the test
+		// Call the plugin method to run the test.
 		//
-		result := obj.Test(input)
+		result, detail := obj.Test(input)
 
-		//
-		// If the plugin-method decided this submission was
-		// SPAM then we immediately reutrn that result to the
-		// caller of our service.
-		//
-		if len(result) > 0 {
-
+		if result == Spam {
 			//
-			// This was a spam comment, so we update our state
+			// If the plugin-method decided this submission was
+			// SPAM then we immediately reutrn that result to the
+			// caller of our service.
 			//
-			// * Global-state
-			//
-			// * Per-Site state
-			//
-			if redisHandle != nil {
-				redisHandle.Incr("global-spam")
-				redisHandle.Incr(fmt.Sprintf("site-%s-spam", input.Site))
-			}
-
-			//
-			// This plugin-test resulted in a spam result
-			//
-			ret := make(map[string]string)
-			ret["result"] = "SPAM"
-			ret["blocker"] = obj.Name
-			ret["reason"] = result
-			ret["version"] = "2.0"
-
-			//
-			// Covert this temporary hash to a JSON
-			// hash we can send to the caller.
-			//
-			jsonString, err := json.Marshal(ret)
-			if err != nil {
-				status = http.StatusInternalServerError
-				return
-			} else {
-				res.Header().Set("Content-Type", "application/json")
-				fmt.Fprintf(res, "%s", jsonString)
-			}
-
-			if flag.Lookup("test.v") == nil {
-				fmt.Printf("\nXXXX SPAM - %s: %s\n", obj.Name, result)
-			}
-
+			SendSpamResult(res, input, obj, detail)
 			return
+		}
+		if result == Ham {
+
+			//
+			// The result is definitely OK - tell the caller.
+			//
+			SendOKResult(res, input)
+			return
+
+		}
+		if result == Undecided {
+
+			// Nop
+		}
+		if result == Error {
+
+			// Nop
+
 		}
 	}
 
 	//
-	// This was a valid comment, so we update our state
+	// If we reached this point no plugin decided this was SPAM,
+	// so we default to saying it was Ham.
 	//
-	// * Global-state
-	//
-	// * Per-Site state
-	//
-	if redisHandle != nil {
-		redisHandle.Incr("global-ok")
-		redisHandle.Incr(fmt.Sprintf("site-%s-ok", input.Site))
-	}
-
-	//
-	// Here we've invoked each of our plugins, and we didn't get
-	// a SPAM result, so we assume we're good.
-	//
-	fmt.Fprintf(res, "{\"result\":\"OK\", \"version\":\"3.0\"}")
+	SendOKResult(res, input)
 }
 
 //

@@ -27,7 +27,7 @@ func init() {
 // If there are options which specify the min/max-size of the body, then
 // test them.
 //
-func validateSize(x Submission) string {
+func validateSize(x Submission) (PluginResult, string) {
 
 	//
 	// Map to store any options we find.
@@ -63,15 +63,15 @@ func validateSize(x Submission) string {
 	if len(tmp["min-size"]) > 0 {
 		i, err := strconv.Atoi(tmp["min-size"])
 		if err != nil {
-			return ("Failed to parse max-size as a number")
+			return Error, "Failed to parse max-size as a number"
 
 		}
 		if i <= 0 {
-			return ("Failed to parse max-size as a positive number")
+			return Error, "Failed to parse max-size as a positive number"
 		}
 
 		if len(x.Comment) < i {
-			return (fmt.Sprintf("Comment size is %d which is less than the minimum size %s", len(x.Comment), tmp["min-size"]))
+			return Spam, fmt.Sprintf("Comment size is %d which is less than the minimum size %s", len(x.Comment), tmp["min-size"])
 		}
 	}
 
@@ -81,19 +81,19 @@ func validateSize(x Submission) string {
 	if len(tmp["max-size"]) > 0 {
 		i, err := strconv.Atoi(tmp["max-size"])
 		if err != nil {
-			return ("Failed to parse max-size as a number")
+			return Error, "Failed to parse max-size as a number"
 		}
 		if i <= 0 {
-			return ("Failed to parse max-size as a positive number")
+			return Error, "Failed to parse max-size as a positive number"
 		}
 
 		if len(x.Comment) > i {
-			return (fmt.Sprintf("Comment size is %d which is more than the maximum size %s", len(x.Comment), tmp["min-size"]))
+			return Spam, fmt.Sprintf("Comment size is %d which is more than the maximum size %s", len(x.Comment), tmp["min-size"])
 		}
 	}
 
 	//
 	// All OK
 	//
-	return ""
+	return Undecided, ""
 }

@@ -24,7 +24,7 @@ func init() {
 
 }
 
-func checkHyperlinkCounts(x Submission) string {
+func checkHyperlinkCounts(x Submission) (PluginResult, string) {
 
 	//
 	// Map to store any options we find.
@@ -64,10 +64,10 @@ func checkHyperlinkCounts(x Submission) string {
 	//
 	max, err := strconv.Atoi(tmp["max-links"])
 	if err != nil {
-		return "Failed to parse max-links as a number"
+		return Error, "Failed to parse max-links as a number"
 	}
 	if max <= 0 {
-		return "Failed to parse max-links as a positive number"
+		return Error, "Failed to parse max-links as a positive number"
 	}
 
 	//
@@ -82,10 +82,10 @@ func checkHyperlinkCounts(x Submission) string {
 	count := index.FindAllIndex(r, -1)
 
 	if len(count) > max {
-		return ("Too many hyperlinks")
+		return Spam, "Too many hyperlinks"
 	}
 	//
 	// All OK
 	//
-	return ""
+	return Undecided, ""
 }

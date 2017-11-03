@@ -20,18 +20,18 @@ func init() {
 // Hacky test to drop comments with too-long name/subjects.
 // test them.
 //
-func validateLength(x Submission) string {
+func validateLength(x Submission) (PluginResult, string) {
 
 	if len(x.Name) > 140 {
-		return ("The submitted 'name' is too long.")
+		return Spam, "The submitted 'name' is too long."
 	}
 
 	if len(x.Subject) > 140 {
-		return ("The submitted 'subject' is too long.")
+		return Spam, "The submitted 'subject' is too long."
 	}
 
 	//
 	// All OK
 	//
-	return ""
+	return Undecided, ""
 }

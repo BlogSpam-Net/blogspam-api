@@ -26,13 +26,13 @@ func init() {
 //
 // Test that the email-field is non-empty and contains an MX-record
 //
-func validateMX(x Submission) string {
+func validateMX(x Submission) (PluginResult, string) {
 
 	//
 	// If we have no email-address we cannot do an MX-lookup.
 	//
 	if len(x.Email) <= 0 {
-		return ""
+		return Undecided, ""
 	}
 
 	//
@@ -54,8 +54,8 @@ func validateMX(x Submission) string {
 		_, err := net.LookupMX(match[1])
 
 		if err != nil {
-			return (fmt.Sprintf("Failed to lookup MX-record of %s", match[1]))
+			return Spam, fmt.Sprintf("Failed to lookup MX-record of %s", match[1])
 		}
 	}
-	return ""
+	return Undecided, ""
 }
