@@ -30,7 +30,7 @@ The current codebase, version 2, is pretty simple:
     * IP
     * etc
 * Once the submission has been decoded from JSON invoke a series of plugins against it.
-    * If any single plugin decides the submission was spam report that
+    * If any single plugin decides the submission was spam report that.
     * Otherwise return a "good" result.
 
 I'm not going to change this basic setup, so really I need a golang HTTP-server that listens for POST-submissions, decodes the JSON, and invokes a series of "plguins" on it.  The plugins won't be _real_ plugins, but self-contained test-code.
@@ -38,65 +38,26 @@ I'm not going to change this basic setup, so really I need a golang HTTP-server 
 
 ## Proof of Concept
 
-This repository contains a proof of concept - it launches a service, reads the JSON-bodies, and invokes plugins against those submissions.
+This repository implements the core of the BlogSPAM API, and can be deployed
+easily.
 
-I've ported several existing plugins and confirmed they pass the tests in the original repositories test-suit, and added 100% golang test-coverage.
+Providing you have a working `golang` environment you can install and
+launch like so:
 
-I've also hardwired a redis-connection to localhost, which will store the state
-of spam/ham counts for each site - as well as globally.
+    $ go get github.com/skx/golang-blogspam.git
+    $ golang-blogspam -host 127.0.0.1 -port 9999 -redis localhost:6379
 
-## Missing Features
+Once launched the original test-cases from the blogspam.js repository
+should succeed when fired against it.
 
-The existing server uses redis to maintain state:
-
-* IPs that send "bad" comments will often be blacklisted for a period of hours.
-
-For the moment I've ignored both of those features.  The stats are useful to the site-owners, and myself, but I think we can live without them.
+If a redis-server is specified it will be used, which means that previously
+blacklist-IPs will be detected and rejected at low-cost.  In the current
+implementation spam-submissions will not result in an IP being globally
+blacklisted, that might come in the future though.
 
 ## TODO
 
 * Port more plugins.
 * Breakout the code in `main.go` so we can add tests
-* Make redis optional
-* Lookup blacklisted IPs in redis.
-* The return values for "plugins" should be finer-grained:
-   * OK - This is valid comment and cease now
-   * Spam - this is spam, stop now
-   * Continue - Continue testing.
 
 
-## Benchmarks
-
-Fake benchmarks:
-
-    $ cat ~/site.json
-    {"site": "http://example.com" }
-
-
-Localhost + golang:
-
-     $ ab -p ~/site.json -T application/json -c 10 -n 2000 http://localhost:9999/stats
-     Time taken for tests:   0.210 seconds
-     Complete requests:      2000
-     Failed requests:        0
-     Total transferred:      262000 bytes
-     Total body sent:        344000
-     HTML transferred:       46000 bytes
-     Requests per second:    9505.16 [#/sec] (mean)
-     Time per request:       1.052 [ms] (mean)
-     Time per request:       0.105 [ms] (mean, across all concurrent requests)
-
-Remote server + node.js - **NOTE** this is doing a quarter the the number of tests:
-
-     $ ab -p ~/site.json -T application/json -c 10 -n 500 http://test.blogspam.net:9999/stats
-     Time taken for tests:   85.771 seconds
-     Complete requests:      500
-     Failed requests:        0
-     Total transferred:      65000 bytes
-     Total body sent:        90000
-     HTML transferred:       11500 bytes
-     Requests per second:    5.83 [#/sec] (mean)
-     Time per request:       1715.421 [ms] (mean)
-     Time per request:       171.542 [ms] (mean, across all concurrent requests)
-
-I think that says it all...
