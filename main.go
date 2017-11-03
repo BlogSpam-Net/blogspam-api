@@ -205,7 +205,7 @@ func StatsHandler(res http.ResponseWriter, req *http.Request) {
 	// Get the spam-count, and assuming no error then we
 	// update our map.
 	//
-	if ( redisHandle != nil ) {
+	if redisHandle != nil {
 		spam_count, err := redisHandle.Get(fmt.Sprintf("site-%s-spam", site)).Result()
 		if err != nil {
 			ret["error"] = err.Error()
@@ -218,7 +218,7 @@ func StatsHandler(res http.ResponseWriter, req *http.Request) {
 	// Get the ham-count, and assuming no error then we
 	// update our map.
 	//
-	if ( redisHandle != nil ) {
+	if redisHandle != nil {
 		ham_count, err := redisHandle.Get(fmt.Sprintf("site-%s-ok", site)).Result()
 		if err != nil {
 			ret["error"] = err.Error()
@@ -376,7 +376,7 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 			//
 			// * Per-Site state
 			//
-			if ( redisHandle != nil ) {
+			if redisHandle != nil {
 				redisHandle.Incr("global-spam")
 				redisHandle.Incr(fmt.Sprintf("site-%s-spam", input.Site))
 			}
@@ -418,7 +418,7 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 	//
 	// * Per-Site state
 	//
-	if ( redisHandle != nil ) {
+	if redisHandle != nil {
 		redisHandle.Incr("global-ok")
 		redisHandle.Incr(fmt.Sprintf("site-%s-ok", input.Site))
 	}
@@ -483,7 +483,7 @@ func PluginListHandler(res http.ResponseWriter, req *http.Request) {
 //
 // Launch our HTTP server
 //
-func serve(port int) {
+func serve(host string, port int) {
 
 	//
 	// Create a new router and our route-mappings.
@@ -521,7 +521,7 @@ func serve(port int) {
 	//
 	// Show where we'll bind
 	//
-	bind := fmt.Sprintf("%s:%d", "0.0.0.0", port)
+	bind := fmt.Sprintf("%s:%d", host, port)
 	fmt.Printf("Launching the server on http://%s\n", bind)
 
 	//
@@ -540,29 +540,42 @@ func serve(port int) {
 
 func main() {
 
-	// //
-	// // Create a sample submission
-	// //
-	// v := Submission{Name: "http://example.com",
-	// 	Email: "non@non.org"}
+	//
+	// The command-line flags we support
+	//
 
-	// //
-	// // Call each known-plugin
-	// //
-	// for _, obj := range plugins {
-	// 	res := obj.Test(v)
-	// 	fmt.Printf("Plugin: %s -> Result: %s\n", obj.Name, res)
-	// 	if len(res) > 0 {
-	// 		fmt.Printf("\tSPAM!\n")
-	// 	} else {
-	// 		fmt.Printf("\tOK\n")
-	// 	}
-	// }
+	//
+	// Host/Port for binding upon
+	//
+	host := flag.String("host", "0.0.0.0", "The IP to bind upon")
+	port := flag.Int("port", 9999, "The port number to listen upon")
 
-	redisHandle = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
-	serve(9999)
+	//
+	// Optional redis-server address
+	//
+	rserver := flag.String("redis", "",
+		"The host:port of the optional redis-server to use.")
+
+	//
+	// Parse the flags
+	//
+	flag.Parse()
+
+	//
+	// If redis host/port was specified then open the connection now.
+	//
+	if len(*rserver) > 0 {
+		fmt.Printf("Using redis-server %s\n", *rserver)
+		redisHandle = redis.NewClient(&redis.Options{
+			Addr:     *rserver,
+			Password: "", // no password set
+			DB:       0,  // use default DB
+		})
+
+	}
+
+	//
+	// And finally start our server
+	//
+	serve(*host, *port)
 }
