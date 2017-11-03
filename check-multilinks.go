@@ -17,7 +17,7 @@ func init() {
 	x := Plugins{Name: "50-multilinks.js",
 		Description: "Look for different linking strategies.",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
-		Test:        checkHyperlinkCounts}
+		Test:        checkLinkingTypes}
 	plugins = append(plugins, x)
 
 }
