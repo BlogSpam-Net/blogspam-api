@@ -14,9 +14,9 @@ import (
 //
 func TestMandatoryOK(t *testing.T) {
 
-	result := validateMandatory(Submission{Site: "example",
+	result, _ := validateMandatory(Submission{Site: "example",
 		IP: "1.2.3.4", Comment: "This is a test"})
-	if len(result) != 0 {
+	if result != Undecided {
 		t.Errorf("Unexpected response: '%v'", result)
 	}
 }
@@ -27,10 +27,10 @@ func TestMandatoryOK(t *testing.T) {
 //
 func TestMandatoryOKExtra(t *testing.T) {
 
-	result := validateMandatory(Submission{Site: "example",
+	result, _ := validateMandatory(Submission{Site: "example",
 		IP: "1.2.3.4", Comment: "This is a test",
 		Options: "mandatory=agent", Agent: "foo"})
-	if len(result) != 0 {
+	if result != Undecided {
 		t.Errorf("Unexpected response: '%v'", result)
 	}
 }
@@ -40,14 +40,14 @@ func TestMandatoryOKExtra(t *testing.T) {
 //
 func TestMandatoryMissingSite(t *testing.T) {
 
-	result := validateMandatory(Submission{Site: "",
+	result, detail := validateMandatory(Submission{Site: "",
 		IP: "1.2.3.4", Comment: "This is a test"})
 
-	if len(result) == 0 {
+	if result != Spam {
 		t.Errorf("Unexpected response: '%v'", result)
 	}
-	if !strings.Contains(result, "is missing") {
-		t.Errorf("Unexpected response: '%v'", result)
+	if !strings.Contains(detail, "is missing") {
+		t.Errorf("Unexpected response: '%v'", detail)
 	}
 }
 
@@ -56,14 +56,14 @@ func TestMandatoryMissingSite(t *testing.T) {
 //
 func TestMandatoryMissingIP(t *testing.T) {
 
-	result := validateMandatory(Submission{Site: "steve.fi",
+	result, detail := validateMandatory(Submission{Site: "steve.fi",
 		IP: "", Comment: "This is a test"})
 
-	if len(result) == 0 {
+	if result != Spam {
 		t.Errorf("Unexpected response: '%v'", result)
 	}
-	if !strings.Contains(result, "is missing") {
-		t.Errorf("Unexpected response: '%v'", result)
+	if !strings.Contains(detail, "is missing") {
+		t.Errorf("Unexpected response: '%v'", detail)
 	}
 }
 
@@ -72,14 +72,14 @@ func TestMandatoryMissingIP(t *testing.T) {
 //
 func TestMandatoryMissingComment(t *testing.T) {
 
-	result := validateMandatory(Submission{Site: "fsdf",
+	result, detail := validateMandatory(Submission{Site: "fsdf",
 		IP: "1.2.3.4"})
 
-	if len(result) == 0 {
+	if result != Spam {
 		t.Errorf("Unexpected response: '%v'", result)
 	}
-	if !strings.Contains(result, "is missing") {
-		t.Errorf("Unexpected response: '%v'", result)
+	if !strings.Contains(detail, "is missing") {
+		t.Errorf("Unexpected response: '%v'", detail)
 	}
 }
 
@@ -88,14 +88,14 @@ func TestMandatoryMissingComment(t *testing.T) {
 //
 func TestMandatoryMissingAgent(t *testing.T) {
 
-	result := validateMandatory(Submission{Site: "fsdf",
+	result, detail := validateMandatory(Submission{Site: "fsdf",
 		IP:      "1.2.3.4",
 		Options: "mandatory=agent"})
 
-	if len(result) == 0 {
+	if result != Spam {
 		t.Errorf("Unexpected response: '%v'", result)
 	}
-	if !strings.Contains(result, "is missing") {
-		t.Errorf("Unexpected response: '%v'", result)
+	if !strings.Contains(detail, "is missing") {
+		t.Errorf("Unexpected response: '%v'", detail)
 	}
 }

@@ -18,7 +18,7 @@ func init() {
 	var x = Plugins{Name: "30-mandatory.js",
 		Description: "Look for any mandatory fields which might be missing.",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
-		Test:        validateEmail}
+		Test:        validateMandatory}
 	plugins = append(plugins, x)
 
 }
@@ -26,7 +26,7 @@ func init() {
 //
 // Test that mandatory fields are present.
 //
-func validateMandatory(x Submission) string {
+func validateMandatory(x Submission) (PluginResult, string) {
 
 	//
 	// The mandatory fields we're going to insist upon by default
@@ -90,11 +90,11 @@ func validateMandatory(x Submission) string {
 
 				// Then raise an error if it is empty
 				if len(fieldVal) < 1 {
-					return fmt.Sprintf("Field %s is missing", fieldName)
+					return Spam, fmt.Sprintf("Field %s is missing", fieldName)
 				}
 			}
 		}
 	}
 
-	return ""
+	return Undecided, ""
 }
