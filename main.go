@@ -30,7 +30,10 @@ import (
 )
 
 //
-// The incoming JSON struct
+// The Submission structure is what we parse incoming JSON into.
+//
+// Each plugin which is implemented will operate solely on an instance
+// of this structure.
 //
 type Submission struct {
 	//
@@ -85,15 +88,15 @@ type Submission struct {
 }
 
 //
-//  The result of calling a plugin.
+// PluginResult is the return-code of each plugin-method.
 //
-//  Each plugin will return a result which is "spam", "ham", "undecided",
+// Each plugin will return a result which is "spam", "ham", "undecided",
 // or error.  These are defined next.
 //
 type PluginResult int
 
 //
-//  There are several possible plugin-results:
+// There are several possible plugin-results:
 //
 //   Spam:
 //    Stop processing and inform the caller.
@@ -121,7 +124,10 @@ const (
 type PluginTest func(Submission) (PluginResult, string)
 
 //
-// A structure to describe each known-plugin.
+// A Plugins object is present for each plugin which is implemented,
+// and bundled with this repository.
+//
+// There is no provision for external plugins.
 //
 type Plugins struct {
 	//
