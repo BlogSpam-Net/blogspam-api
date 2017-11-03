@@ -79,6 +79,37 @@ func checkBlacklist(x Submission) (PluginResult, string) {
 	}
 
 	//
+	// If Redis is not available we're done
+	//
+	if ( redisHandle == nil ) {
+		return Undecided, ""
+	}
+
+
+	//
+	// Since we have redis-enabled we'll now look for the remote IP too.
+	//
+	// The key is named `blacklist-$IP`
+	//
+	key := fmt.Sprintf("blacklist-%s", x.IP )
+
+	//
+	// Run the lookup
+	//
+	result, err := redisHandle.Get(key).Result()
+	if ( err != nil ) {
+		return Error, err.Error()
+	}
+
+	//
+	// If there was a result then it is spam
+	//
+	if len(result) > 0 {
+		return Spam, result
+	}
+
+	//
+	// Not blocked by options, or previous attempts
 	//
 	return Undecided, ""
 }
