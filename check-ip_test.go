@@ -68,3 +68,22 @@ func TestIPBlacklistBogusCIDR(t *testing.T) {
 	}
 
 }
+
+func TestIPBlacklistLiterally(t *testing.T) {
+
+	//
+	// This should fail as the IP is blacklisted.
+	//
+	result, detail := checkBlacklist(Submission{Email: "moi@exampl.fi",
+		Subject: "Hello", IP: "10.20.30.47", Options: "blacklist=10.20.30.47"})
+	if result != Spam {
+		t.Errorf("Unexpected result: '%v'", result)
+	}
+	if len(detail) == 0 {
+		t.Errorf("Unexpected response: '%v'", detail)
+	}
+	if !strings.Contains(detail, "IP blacklisted") {
+		t.Errorf("Unexpected response: '%v'", detail)
+	}
+
+}
