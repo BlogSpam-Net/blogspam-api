@@ -18,7 +18,8 @@ func init() {
 	var x = Plugins{Name: "60-drone.js",
 		Description: "Test IP of the comment-submitter against dronebl.org",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
-		Test:        checkDroneBlacklist}
+		Test:        checkDroneBlacklist,
+		RedisCache:  true}
 
 	registerPlugin(x)
 

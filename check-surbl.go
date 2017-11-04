@@ -18,7 +18,8 @@ func init() {
 	var x = Plugins{Name: "60-surbl.js",
 		Description: "Test links in messages against surbl.org",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
-		Test:        checkSurblBlacklist}
+		Test:        checkSurblBlacklist,
+		RedisCache:  true}
 	registerPlugin(x)
 
 }

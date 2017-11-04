@@ -20,7 +20,8 @@ func init() {
 	var x = Plugins{Name: "80-sfs.js",
 		Description: "Look for blacklisted IPs via stopforumspam.com",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
-		Test:        checkSFSBlacklist}
+		Test:        checkSFSBlacklist,
+		RedisCache:  true}
 	registerPlugin(x)
 
 }

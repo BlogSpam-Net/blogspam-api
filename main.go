@@ -27,6 +27,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 )
 
 //
@@ -150,6 +151,14 @@ type Plugins struct {
 	// The function to invoke to use the plugin.
 	//
 	Test PluginTest
+
+	//
+	// Should SPAM-results be recorded in Redis?
+	//
+	// This is a dangerous setting, which is designed to cache
+	// the results of expensive plugins.
+	//
+	RedisCache bool
 }
 
 //
@@ -513,6 +522,20 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 			// caller of our service.
 			//
 			SendSpamResult(res, input, obj, detail)
+
+			//
+			// If we should cache in redis, and redis
+			// is enabled, do so
+			//
+			if (obj.RedisCache == true) && (redisHandle != nil) {
+				key := fmt.Sprintf("blacklist-%s", input.IP)
+				period := time.Hour * 48
+				err := redisHandle.Set(key, detail, period).Err()
+				if err != nil {
+					fmt.Printf("WARNING Redis-error - %s\n", err.Error())
+				}
+			}
+
 			return
 		}
 		if result == Ham {
