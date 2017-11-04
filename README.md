@@ -5,41 +5,38 @@
 
 # Golang BlogSpam Server
 
-I'm in the process of cutting down on the number of machines I host,
-and one of the casualities is the [BlogSpam.net](https://blogspam.net/) service.
+The [BlogSpam.net](https://blogspam.net/) service presents an API which allows
+incoming blog/forum comments to be tested for SPAM in real-time.
 
-Rather than killing it outright I need to make it more efficient, such
-that it can run upon an existing server I have, rather than requiring a dedicated machine of its own to run upon.  It has been suggested that I can reduce functionality, and port it to golang to make that happen.
+This repository contains an implementation of the API in golang, which allows you to run your own instance of the service, this superceeds the previous [implementation in node.js](https://github.com/skx/blogspam.js).
 
-> **NOTE** I did update the site to say the service will be retired, but I suspect nobody using the service will have noticed.  Oops.
-
-I don't want to spend huge amounts of time on the process, as [the
-existing code](https://github.com/skx/blogspam.js) is open-source and
-available for users who wish to continue.  But I'm certainly willing to
-spend a day or two trying to move it.
 
 ## Overview
 
-The current codebase, version 2, is pretty simple:
+The service presents a simple API over HTTP.  There are three end-points:
 
-* Read an incoming HTTP POST.
-* The POST is a JSON object with a small number of fields:
-    * Name
-    * Email
-    * Body
-    * IP
-    * etc
-* Once the submission has been decoded from JSON invoke a series of plugins against it.
-    * If any single plugin decides the submission was spam report that.
-    * Otherwise return a "good" result.
+* `POST /`
+    * Test the incoming submission for SPAM.
+* `POST /stats`
+    * Retrieve the per-site SPAM/HAM statistics
+* `GET /plugins`
+    * Retrieve the list of plugins.
+* `POST /classify`
+    * Retrain a comment.
 
-I'm not going to change this basic setup, so really I need a golang HTTP-server that listens for POST-submissions, decodes the JSON, and invokes a series of "plguins" on it.  The plugins won't be _real_ plugins, but self-contained test-code.
+These endpoints, and the parameters they require, are documented upon the website:
+
+* [https://blogspam.net/api/2.0/](https://blogspam.net/api/2.0/)
 
 
-## Proof of Concept
+## Plugin Implementation
 
-This repository implements the core of the BlogSPAM API, and can be deployed
-easily.
+Although we refer to them as "plugins" the individual tests which are applied to incoming submissions are all in-process and hardwired - there is nothing dynamic about them.
+
+Each plugin has a name, and an order, and each is invoked in turn upon the incoming submission.  If any single plugin determines an incoming comment is SPAM then it is rejected, similarly any single plugin may decided a comment is definitely-HAM.  Otherwise processing continues until all plugins have been invoked.
+
+
+## Installation
 
 Providing you have a working `golang` environment you can install and
 launch like so:
@@ -47,11 +44,8 @@ launch like so:
     $ go get github.com/skx/golang-blogspam.git
     $ golang-blogspam -host 127.0.0.1 -port 9999 -redis localhost:6379
 
-Once launched the original test-cases from the blogspam.js repository
-should succeed when fired against it.
+As hinted in the command-line arguments you'll want to install [redis](https://redis.io/) upon the local-host, but otherwise there is no configuration or setup required.
 
-If a redis-server is specified it will be used, which means that previously
-blacklist-IPs will be detected and rejected at low-cost.  In the current
-implementation spam-submissions will not result in an IP being globally
-blacklisted, that might come in the future though.
 
+Steve
+--
