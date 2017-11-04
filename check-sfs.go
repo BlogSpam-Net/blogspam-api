@@ -21,7 +21,7 @@ func init() {
 		Description: "Look for blacklisted IPs via stopforumspam.com",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
 		Test:        checkSFSBlacklist}
-	plugins = append(plugins, x)
+	registerPlugin(x)
 
 }
 

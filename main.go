@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -166,6 +167,20 @@ var plugins []Plugins
 // The global Redis client, if redis is enabled.
 //
 var redisHandle *redis.Client
+
+//
+// Register a plugin - we use this method to ensure that the plugins
+// are sorted by name, which means the lighter-weight plugins run
+// first.
+//
+func registerPlugin(addition Plugins) {
+
+	plugins = append(plugins, addition)
+
+	sort.Slice(plugins[:], func(i, j int) bool {
+		return plugins[i].Name < plugins[j].Name
+	})
+}
 
 //
 // ClassifyHandler is a HTTP-Handler which should re-train the given input.

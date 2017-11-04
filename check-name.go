@@ -16,7 +16,7 @@ func init() {
 		Description: "Check there is no hyper-link in the name-field",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
 		Test:        checkLinkName}
-	plugins = append(plugins, x)
+	registerPlugin(x)
 
 }
 

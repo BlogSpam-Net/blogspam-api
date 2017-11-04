@@ -20,7 +20,7 @@ func init() {
 		Description: "Look for excessive numbers of HTTP links.",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
 		Test:        checkHyperlinkCounts}
-	plugins = append(plugins, x)
+	registerPlugin(x)
 
 }
 

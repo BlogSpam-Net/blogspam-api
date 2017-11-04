@@ -23,7 +23,6 @@ func TestNonSurbl(t *testing.T) {
 	}
 }
 
-
 //
 // Test an example that is currently listed in Surbl
 //

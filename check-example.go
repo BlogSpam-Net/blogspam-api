@@ -17,8 +17,7 @@ func init() {
 		Description: "Look for example-domains in emails",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
 		Test:        validateEmail}
-	plugins = append(plugins, x)
-
+	registerPlugin(x)
 }
 
 //

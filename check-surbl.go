@@ -5,10 +5,10 @@
 package main
 
 import (
+	"mvdan.cc/xurls"
 	"net"
 	"net/url"
 	"strings"
-	"mvdan.cc/xurls"
 )
 
 func init() {
@@ -19,7 +19,7 @@ func init() {
 		Description: "Test links in messages against surbl.org",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
 		Test:        checkSurblBlacklist}
-	plugins = append(plugins, x)
+	registerPlugin(x)
 
 }
 
@@ -45,13 +45,13 @@ func checkSurblBlacklist(x Submission) (PluginResult, string) {
 	// This means removing any `https?://` prefix
 	// and any URL part.
 	//
-	for _,link := range( links ) {
+	for _, link := range links {
 
 		//
 		// If we don't have a protocol-prefix, add it.
 		//
-		if ( ! strings.HasPrefix( link, "http://" ) &&
-			! strings.HasPrefix( link, "https://" ) ) {
+		if !strings.HasPrefix(link, "http://") &&
+			!strings.HasPrefix(link, "https://") {
 			link = "http://" + link
 		}
 
@@ -66,7 +66,7 @@ func checkSurblBlacklist(x Submission) (PluginResult, string) {
 			// The thing we lookup - stored in our map
 			// to ensure we don't have duplicates
 			//
-			lookups[ hostname + ".multi.surbl.org" ] = 1
+			lookups[hostname+".multi.surbl.org"] = 1
 		}
 	}
 
@@ -75,14 +75,13 @@ func checkSurblBlacklist(x Submission) (PluginResult, string) {
 	//
 	// Let us do that, if any result in a result we know we've got spam.
 	//
-	for host, _ := range( lookups ) {
+	for host, _ := range lookups {
 
 		reply, _ := net.LookupHost(host)
 		if len(reply) != 0 {
 			return Spam, "Posted link(s) listed in surbl.org"
 		}
 	}
-
 
 	//
 	// We got no listing, so we're OK.

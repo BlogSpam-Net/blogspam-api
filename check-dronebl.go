@@ -19,7 +19,8 @@ func init() {
 		Description: "Test IP of the comment-submitter against dronebl.org",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
 		Test:        checkDroneBlacklist}
-	plugins = append(plugins, x)
+
+	registerPlugin(x)
 
 }
 

@@ -19,7 +19,7 @@ func init() {
 		Description: "Look for blacklisted IP addresses",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
 		Test:        checkBlacklist}
-	plugins = append(plugins, x)
+	registerPlugin(x)
 
 }
 

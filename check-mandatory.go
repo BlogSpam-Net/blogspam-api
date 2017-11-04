@@ -19,7 +19,7 @@ func init() {
 		Description: "Look for any mandatory fields which might be missing.",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
 		Test:        validateMandatory}
-	plugins = append(plugins, x)
+	registerPlugin(x)
 
 }
 

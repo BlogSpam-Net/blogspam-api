@@ -18,7 +18,7 @@ func init() {
 		Description: "Look for different linking strategies.",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
 		Test:        checkLinkingTypes}
-	plugins = append(plugins, x)
+	registerPlugin(x)
 
 }
 

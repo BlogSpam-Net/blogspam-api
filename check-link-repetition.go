@@ -16,7 +16,7 @@ func init() {
 		Description: "Look for the link repeated in the body.",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
 		Test:        checkRepetitiveLinks}
-	plugins = append(plugins, x)
+	registerPlugin(x)
 
 }
 

@@ -12,7 +12,7 @@ func init() {
 		Description: "Look at the size of subject and name",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
 		Test:        validateLength}
-	plugins = append(plugins, x)
+	registerPlugin(x)
 
 }
 
