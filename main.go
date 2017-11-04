@@ -24,6 +24,7 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"os"
+	"reflect"
 	"regexp"
 	"sort"
 	"strings"
@@ -178,6 +179,11 @@ var plugins []Plugins
 var redisHandle *redis.Client
 
 //
+// Should we be verbose?
+//
+var verbose bool
+
+//
 // Register a plugin - we use this method to ensure that the plugins
 // are sorted by name, which means the lighter-weight plugins run
 // first.
@@ -214,7 +220,7 @@ func StatsHandler(res http.ResponseWriter, req *http.Request) {
 			http.Error(res, err.Error(), status)
 			// Don't spam stdout when running test-cases.
 			if flag.Lookup("test.v") == nil {
-				fmt.Printf("Error: %s\n", err.Error())
+				fmt.Printf("WARNING - Error returned from /stats handler - %s\n", err.Error())
 			}
 		}
 	}()
@@ -351,13 +357,6 @@ func SendSpamResult(res http.ResponseWriter, input Submission, plugin Plugins, d
 	res.Header().Set("Content-Type", "application/json")
 	fmt.Fprintf(res, "%s", jsonString)
 
-	//
-	// Log to STDOUT if we're not running tests.
-	//
-	if flag.Lookup("test.v") == nil {
-		fmt.Printf("\nXXXX SPAM - %s: %s\n", plugin.Name, detail)
-	}
-
 }
 
 //
@@ -384,7 +383,6 @@ func SendOKResult(res http.ResponseWriter, input Submission) {
 	//
 	res.Header().Set("Content-Type", "application/json")
 	fmt.Fprintf(res, "{\"result\":\"OK\", \"version\":\"3.0\"}")
-
 }
 
 //
@@ -407,7 +405,7 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 			http.Error(res, err.Error(), status)
 			// Don't spam stdout when running test-cases.
 			if flag.Lookup("test.v") == nil {
-				fmt.Printf("Error: %s\n", err.Error())
+				fmt.Printf("WARNING - Error returned from / handler - %s\n", err.Error())
 			}
 		}
 	}()
@@ -441,11 +439,33 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	//
-	// If we decoded then pretty-print it to STDOUT,
-	// unless we're running our tests.
+	// Dump the incoming request to STDOUT if running verbosely.
 	//
-	if flag.Lookup("test.v") == nil {
-		fmt.Printf("\t%+v\n", input)
+	if verbose {
+
+		//
+		// Get all the fields of the structure, via reflection
+		//
+		s := reflect.ValueOf(&input).Elem()
+		typeOfT := s.Type()
+
+		//
+		// Iterate over the fields.
+		//
+		for i := 0; i < s.NumField(); i++ {
+
+			// The specific field
+			f := s.Field(i)
+
+			// The name/value of the field
+			fieldName := typeOfT.Field(i).Name
+			fieldVal := fmt.Sprintf("%s", f.Interface())
+
+			// Print non-empty fields
+			if len(fieldVal) > 0 {
+				fmt.Printf("\t%s : %s\n", fieldName, fieldVal)
+			}
+		}
 	}
 
 	//
@@ -499,9 +519,6 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 			// Look for this plugin being excluded.
 			//
 			if strings.Contains(name, ex) || name == ex {
-				if flag.Lookup("test.v") == nil {
-					fmt.Printf("\tPlugin skipped: %s\n", name)
-				}
 				skip = true
 			}
 		}
@@ -514,6 +531,11 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 		// Call the plugin method to run the test.
 		//
 		result, detail := obj.Test(input)
+
+		if verbose {
+			fmt.Printf("Plugin %s returned: %d,%s\n",
+				obj.Name, result, detail)
+		}
 
 		if result == Spam {
 			//
@@ -532,7 +554,7 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 				period := time.Hour * 48
 				err := redisHandle.Set(key, detail, period).Err()
 				if err != nil {
-					fmt.Printf("WARNING Redis-error - %s\n", err.Error())
+					fmt.Printf("WARNING redis-error blacklisting IP %s - %s\n", input.IP, err.Error())
 				}
 			}
 
@@ -685,6 +707,7 @@ func main() {
 	//
 	host := flag.String("host", "127.0.0.1", "The IP to bind upon")
 	port := flag.Int("port", 9999, "The port number to listen upon")
+	verb := flag.Bool("verbose", false, "Should we be verbose")
 
 	//
 	// Optional redis-server address
@@ -696,6 +719,11 @@ func main() {
 	// Parse the flags
 	//
 	flag.Parse()
+
+	//
+	// Set the global verbose flag.
+	//
+	verbose = (*verb == true)
 
 	//
 	// If redis host/port was specified then open the connection now.

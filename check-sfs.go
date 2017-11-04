@@ -66,7 +66,7 @@ func checkSFSBlacklist(x Submission) (PluginResult, string) {
 	// Handle error
 	//
 	if err != nil {
-		fmt.Printf("HTTP-Error from %s - %s", url, err)
+		fmt.Printf("WARNING: HTTP-Error reading from %s - %s", url, err)
 		return Error, err.Error()
 	}
 
@@ -76,7 +76,7 @@ func checkSFSBlacklist(x Submission) (PluginResult, string) {
 	defer response.Body.Close()
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		fmt.Printf("HTTP-Error from %s - %s", url, err)
+		fmt.Printf("WARNING: HTTP-Error reading body from %s - %s", url, err)
 		return Error, err.Error()
 	}
 
