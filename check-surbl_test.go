@@ -33,7 +33,7 @@ func TestSurblListed(t *testing.T) {
 	if result != Spam {
 		t.Errorf("Unexpected response: '%v'", result)
 	}
-	if len(detail) != 0 {
+	if len(detail) == 0 {
 		t.Errorf("Unexpected response: '%v'", detail)
 	}
 }
