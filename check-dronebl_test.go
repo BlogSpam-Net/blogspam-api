@@ -18,7 +18,8 @@ func TestNonDrone(t *testing.T) {
 	//
 	inputs := []string{"127.0.0.1",
 		"192.168.0.1",
-		"10.11.12.13"}
+		"10.11.12.13",
+		"not-an-ip"}
 
 	for _, input := range inputs {
 
