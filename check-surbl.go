@@ -76,7 +76,7 @@ func checkSurblBlacklist(x Submission) (PluginResult, string) {
 	//
 	// Let us do that, if any result in a result we know we've got spam.
 	//
-	for host, _ := range lookups {
+	for host := range lookups {
 
 		reply, _ := net.LookupHost(host)
 		if len(reply) != 0 {
