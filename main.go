@@ -532,9 +532,30 @@ func SpamTestHandler(res http.ResponseWriter, req *http.Request) {
 		//
 		result, detail := obj.Test(input)
 
+		//
+		// Show the result of each plugin, if running verbosely
+		//
 		if verbose {
-			fmt.Printf("Plugin %s returned: %d,%s\n",
-				obj.Name, result, detail)
+
+			//
+			// Rather than showing the enum the plugin returns
+			// we decode it into the human-readable version.
+			//
+			human := ""
+			switch result {
+			case Spam:
+				human = "Spam"
+			case Undecided:
+				human = "Undecided"
+			case Error:
+				human = "Error"
+			case Ham:
+				human = "Ham"
+			}
+
+			// Show the output
+			fmt.Printf("Plugin %s returned: %s %s\n",
+				obj.Name, human, detail)
 		}
 
 		if result == Spam {
