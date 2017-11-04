@@ -104,10 +104,7 @@ func checkBlacklist(x Submission) (PluginResult, string) {
 	//
 	// Run the lookup
 	//
-	result, err := redisHandle.Get(key).Result()
-	if err != nil {
-		return Error, err.Error()
-	}
+	result, _ := redisHandle.Get(key).Result()
 
 	//
 	// If there was a result then it is spam
