@@ -15,7 +15,7 @@ func init() {
 	//
 	// Add our plugin-method.
 	//
-	var x = Plugins{Name: "15-requiremx.js",
+	var x = Plugins{Name: "25-requiremx.js",
 		Description: "Validates that an incoming submission has an MX record",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
 		Test:        validateMX,
