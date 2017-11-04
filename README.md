@@ -55,9 +55,3 @@ blacklist-IPs will be detected and rejected at low-cost.  In the current
 implementation spam-submissions will not result in an IP being globally
 blacklisted, that might come in the future though.
 
-## TODO
-
-* Port more plugins.
-* Breakout the code in `main.go` so we can add tests
-
-
