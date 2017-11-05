@@ -26,6 +26,7 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"os"
 	"reflect"
@@ -381,6 +382,19 @@ func SendOKResult(res http.ResponseWriter, input Submission) {
 		// Bump the per-site Ham-count
 		//
 		redisHandle.Incr(fmt.Sprintf("site-%s-ok", input.Site))
+	}
+
+	//
+	// Log some fields in case of error.
+	//
+	if len(input.Link) > 0 {
+		log.Printf("Link: %s\n", input.Link)
+	}
+	if len(input.Name) > 0 {
+		log.Printf("Name: %s\n", input.Name)
+	}
+	if len(input.Subject) > 0 {
+		log.Printf("Subject: %s\n", input.Subject)
 	}
 
 	//
@@ -764,6 +778,22 @@ func main() {
 	} else {
 		redisHandle = nil
 	}
+
+	//
+	// Open our logfile for ham
+	//
+	hamLog, err := os.OpenFile("/tmp/ham.log",
+		os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		fmt.Printf("Error opening file: %v", err)
+		os.Exit(1)
+	}
+	defer hamLog.Close()
+
+	//
+	// Set the log-target.
+	//
+	log.SetOutput(hamLog)
 
 	//
 	// And finally start our server
