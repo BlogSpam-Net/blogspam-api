@@ -11,15 +11,14 @@ import (
 	"strings"
 )
 
+//
+// Register ourself as a blogspam-plugin.
+//
 func init() {
-	//
-	// Add our plugin-method.
-	//
-	var x = Plugins{Name: "20-ip.js",
+	registerPlugin(BlogspamPlugin{Name: "20-ip.js",
 		Description: "Look for blacklisted IP addresses",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
-		Test:        checkBlacklist}
-	registerPlugin(x)
+		Test:        checkBlacklist})
 
 }
 

@@ -11,16 +11,15 @@ import (
 	"regexp"
 )
 
+//
+// Register ourself as a blogspam-plugin.
+//
 func init() {
-	//
-	// Add our plugin-method.
-	//
-	var x = Plugins{Name: "25-requiremx.js",
+	registerPlugin(BlogspamPlugin{Name: "25-requiremx.js",
 		Description: "Validates that an incoming submission has an MX record",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
 		Test:        validateMX,
-		RedisCache:  true}
-	registerPlugin(x)
+		RedisCache:  true})
 
 }
 

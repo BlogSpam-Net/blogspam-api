@@ -6,7 +6,11 @@
 // * If any single plugin decides the comment is spam, we drop it.
 // * Otherwise we're all OK.
 //
-// This is a bit ropy.
+// We use redis to store per-site, and global, spam/ham counts, and
+// we write link/name/subject/email data to a logfile if it is ham
+// to see if we need to update our blacklist(s).
+//
+// This code is a bit ropy..
 //
 // Steve
 // --
@@ -108,6 +112,7 @@ type PluginResult int
 //    Continue running further plugins.
 //   Error:
 //    Internal error running a plugin.
+//    Continue running further plugins.
 //
 const (
 	Spam PluginResult = iota
@@ -127,12 +132,12 @@ const (
 type PluginTest func(Submission) (PluginResult, string)
 
 //
-// A Plugins object is present for each plugin which is implemented,
+// A BlogspamPlugin object is present for each plugin which is implemented,
 // and bundled with this repository.
 //
 // There is no provision for external plugins.
 //
-type Plugins struct {
+type BlogspamPlugin struct {
 	//
 	// The author of the plugin.
 	//
@@ -171,7 +176,7 @@ type Plugins struct {
 // a plugin of any kind.
 //
 //
-var plugins []Plugins
+var plugins []BlogspamPlugin
 
 //
 // The global Redis client, if redis is enabled.
@@ -188,7 +193,7 @@ var verbose bool
 // are sorted by name, which means the lighter-weight plugins run
 // first.
 //
-func registerPlugin(addition Plugins) {
+func registerPlugin(addition BlogspamPlugin) {
 
 	plugins = append(plugins, addition)
 
@@ -316,7 +321,7 @@ func StatsHandler(res http.ResponseWriter, req *http.Request) {
 //
 // Bump our global and per-site count, if redis is available.
 //
-func SendSpamResult(res http.ResponseWriter, input Submission, plugin Plugins, detail string) {
+func SendSpamResult(res http.ResponseWriter, input Submission, plugin BlogspamPlugin, detail string) {
 
 	if redisHandle != nil {
 		//

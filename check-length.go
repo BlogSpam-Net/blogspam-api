@@ -4,15 +4,14 @@
 
 package main
 
+//
+// Register ourself as a blogspam-plugin.
+//
 func init() {
-	//
-	// Add our plugin-method.
-	//
-	var x = Plugins{Name: "42-length.js",
+	registerPlugin(BlogspamPlugin{Name: "42-length.js",
 		Description: "Look at the size of subject and name",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
-		Test:        validateLength}
-	registerPlugin(x)
+		Test:        validateLength})
 
 }
 

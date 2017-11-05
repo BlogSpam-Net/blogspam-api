@@ -9,15 +9,14 @@ import (
 	"strings"
 )
 
+//
+// Register ourself as a blogspam-plugin.
+//
 func init() {
-	//
-	// Add our plugin-method.
-	//
-	var x = Plugins{Name: "10-example.js",
+	registerPlugin(BlogspamPlugin{Name: "10-example.js",
 		Description: "Look for example-domains in emails",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
-		Test:        validateEmail}
-	registerPlugin(x)
+		Test:        validateEmail})
 }
 
 //

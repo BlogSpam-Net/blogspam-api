@@ -11,16 +11,14 @@ import (
 	"strings"
 )
 
+//
+// Register ourself as a blogspam-plugin.
+//
 func init() {
-	//
-	// Add our plugin-method.
-	//
-	var x = Plugins{Name: "30-mandatory.js",
+	registerPlugin(BlogspamPlugin{Name: "30-mandatory.js",
 		Description: "Look for any mandatory fields which might be missing.",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
-		Test:        validateMandatory}
-	registerPlugin(x)
-
+		Test:        validateMandatory})
 }
 
 //

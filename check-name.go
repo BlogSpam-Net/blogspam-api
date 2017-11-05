@@ -7,16 +7,14 @@ package main
 
 import "strings"
 
+//
+// Register ourself as a blogspam-plugin.
+//
 func init() {
-
-	//
-	// Add our plugin-method
-	//
-	x := Plugins{Name: "35-name.js",
+	registerPlugin(BlogspamPlugin{Name: "35-name.js",
 		Description: "Check there is no hyper-link in the name-field",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
-		Test:        checkLinkName}
-	registerPlugin(x)
+		Test:        checkLinkName})
 
 }
 

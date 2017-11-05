@@ -63,6 +63,9 @@ func processDirectory(dir string) {
 
 }
 
+//
+// Register ourselves as a plugin, after setting up our config-files.
+//
 func init() {
 
 	//
@@ -76,14 +79,10 @@ func init() {
 	processDirectory("./blacklist.d/")
 	processDirectory("/etc/blogspam/blacklist.d/")
 
-	//
-	// Now add our plugin-method.
-	//
-	var x = Plugins{Name: "05-blacklisted-fields.js",
+	registerPlugin(BlogspamPlugin{Name: "05-blacklisted-fields.js",
 		Description: "Look for blacklisted patterns in fields",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
-		Test:        checkBlacklistedFields}
-	registerPlugin(x)
+		Test:        checkBlacklistedFields})
 }
 
 //

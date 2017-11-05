@@ -9,17 +9,14 @@ import (
 	"regexp"
 )
 
+//
+// Register ourself as a blogspam-plugin.
+//
 func init() {
-
-	//
-	// Add our plugin-method
-	//
-	x := Plugins{Name: "50-multilinks.js",
+	registerPlugin(BlogspamPlugin{Name: "50-multilinks.js",
 		Description: "Look for different linking strategies.",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
-		Test:        checkLinkingTypes}
-	registerPlugin(x)
-
+		Test:        checkLinkingTypes})
 }
 
 //

@@ -11,17 +11,15 @@ import (
 	"strings"
 )
 
+//
+// Register ourself as a blogspam-plugin.
+//
 func init() {
-	//
-	// Add our plugin-method.
-	//
-	var x = Plugins{Name: "60-surbl.js",
+	registerPlugin(BlogspamPlugin{Name: "60-surbl.js",
 		Description: "Test links in messages against surbl.org",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
 		Test:        checkSurblBlacklist,
-		RedisCache:  true}
-	registerPlugin(x)
-
+		RedisCache:  true})
 }
 
 //

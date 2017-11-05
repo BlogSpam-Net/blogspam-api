@@ -11,16 +11,14 @@ import (
 	"strings"
 )
 
+//
+// Register ourself as a blogspam-plugin.
+//
 func init() {
-
-	//
-	// Add our plugin-method
-	//
-	x := Plugins{Name: "50-lotsaurls.js",
+	registerPlugin(BlogspamPlugin{Name: "50-lotsaurls.js",
 		Description: "Look for excessive numbers of HTTP links.",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
-		Test:        checkHyperlinkCounts}
-	registerPlugin(x)
+		Test:        checkHyperlinkCounts})
 
 }
 

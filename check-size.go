@@ -11,16 +11,14 @@ import (
 	"strings"
 )
 
+//
+// Register ourself as a blogspam-plugin.
+//
 func init() {
-	//
-	// Add our plugin-method.
-	//
-	var x = Plugins{Name: "40-size.js",
+	registerPlugin(BlogspamPlugin{Name: "40-size.js",
 		Description: "Look at the size of the body",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
-		Test:        validateSize}
-	registerPlugin(x)
-
+		Test:        validateSize})
 }
 
 //

@@ -8,16 +8,14 @@ import (
 	"strings"
 )
 
+//
+// Register ourself as a blogspam-plugin.
+//
 func init() {
-	//
-	// Add our plugin-method.
-	//
-	var x = Plugins{Name: "33-link-body.js",
+	registerPlugin(BlogspamPlugin{Name: "33-link-body.js",
 		Description: "Look for the link repeated in the body.",
 		Author:      "Steve Kemp <steve@steve.org.uk>",
-		Test:        checkRepetitiveLinks}
-	registerPlugin(x)
-
+		Test:        checkRepetitiveLinks})
 }
 
 //

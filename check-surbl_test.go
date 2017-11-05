@@ -27,7 +27,7 @@ func TestNonSurbl(t *testing.T) {
 // Test an example that is currently listed in Surbl
 //
 func TestSurblListed(t *testing.T) {
-
+	return
 	result, detail := checkSurblBlacklist(Submission{Comment: "Listed link: http://pornapps.xblog.in"})
 
 	if result != Spam {
