@@ -10,7 +10,7 @@
 // we write link/name/subject/email data to a logfile if it is ham
 // to see if we need to update our blacklist(s).
 //
-// This code is a bit ropy..
+// This code is a bit ropy.
 //
 // Steve
 // --
