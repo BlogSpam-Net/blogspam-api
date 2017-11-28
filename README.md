@@ -8,7 +8,7 @@
 The [BlogSpam.net](https://blogspam.net/) service presents an API which allows
 incoming blog/forum comments to be tested for SPAM in real-time.
 
-This repository contains an implementation of the API in golang, which allows you to run your own instance of the service, this superceeds the previous [implementation in node.js](https://github.com/skx/blogspam.js).
+This repository contains an implementation of the API in golang, which allows you to run your own instance of the service, this superceeds the previous [implementation in node.js](https://github.com/BlogSpam-net/blogspam.js).
 
 
 ## Overview
