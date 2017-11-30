@@ -44,8 +44,8 @@ Each plugin has a name, and an order, and each is invoked in turn upon the incom
 Providing you have a working `golang` environment you can install and
 launch like so:
 
-    $ go get github.com/skx/golang-blogspam.git
-    $ golang-blogspam -host 127.0.0.1 -port 9999 -redis localhost:6379
+    $ go get github.com/BlogSpam-Net/blogspam-api
+    $ blogspam-api -host 127.0.0.1 -port 9999 -redis localhost:6379
 
 As hinted in the command-line arguments you'll want to install [redis](https://redis.io/) upon the local-host, but otherwise there is no configuration or setup required.
 
