@@ -13,12 +13,15 @@ This repository contains an implementation of the API in golang, which allows yo
 
 ## Overview
 
-The service presents a simple API over HTTP.  There are three end-points:
+The service presents a simple API over HTTP.  There are only a small number
+of end-points:
 
 * `POST /`
     * Test the incoming submission for SPAM.
 * `POST /stats`
     * Retrieve the per-site SPAM/HAM statistics
+* `GET /global-stats`
+    * Retrieve global SPAM/HAM stats.
 * `GET /plugins`
     * Retrieve the list of plugins.
 * `POST /classify`
