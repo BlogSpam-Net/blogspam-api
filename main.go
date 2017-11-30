@@ -384,10 +384,10 @@ func GlobalStatsHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	//
-	// Send it - note the `callback` usage, as we're JSONP.
+	// Send it.
 	//
 	res.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(res, "%s(%s)", "callback", jsonString)
+	fmt.Fprintf(res, "%s",  jsonString)
 }
 
 //
