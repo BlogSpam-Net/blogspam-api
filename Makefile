@@ -1,9 +1,9 @@
 
-golang-blogspam-server: $(wildcard *.go)
+blogspam-api: $(wildcard *.go)
 	go build .
 
 clean:
-	rm golang-blogspam-server fmt cover.out foo.html || true
+	rm blogspam-api fmt cover.out foo.html || true
 
 fmt:
 	go fmt .
