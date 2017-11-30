@@ -317,6 +317,79 @@ func StatsHandler(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(res, "%s", jsonString)
 }
 
+
+//
+// GlboalStatsHandler is a HTTP-handler which should return the global
+// count of spam vs. ham.
+//
+func GlobalStatsHandler(res http.ResponseWriter, req *http.Request) {
+	var (
+		status int
+		err    error
+	)
+	defer func() {
+		if nil != err {
+			http.Error(res, err.Error(), status)
+			// Don't spam stdout when running test-cases.
+			if flag.Lookup("test.v") == nil {
+				fmt.Printf("WARNING - Error returned from /global-stats handler - %s\n", err.Error())
+			}
+		}
+	}()
+
+	//
+	// Create a map for returning our results to the caller.
+	//
+	// We default to having zero for both counts.  This ensures
+	// we populate the return-value(s) in the event of an error,
+	// or if redis is disabled
+	//
+	ret := make(map[string]string)
+	ret["spam"] = "0"
+	ret["ok"] = "0"
+
+	//
+	// Get the spam-count, and assuming no error then we
+	// update our map.
+	//
+	if redisHandle != nil {
+		spamCount, err := redisHandle.Get("global-spam" ).Result()
+		if err != nil {
+			ret["error"] = err.Error()
+		} else {
+			ret["spam"] = spamCount
+		}
+	}
+
+	//
+	// Get the ham-count, and assuming no error then we
+	// update our map.
+	//
+	if redisHandle != nil {
+		hamCount, err := redisHandle.Get("global-ok").Result()
+		if err != nil {
+			ret["error"] = err.Error()
+		} else {
+			ret["ok"] = hamCount
+		}
+	}
+
+	//
+	// Convert this temporary hash to a JSON object we can return
+	//
+	jsonString, err := json.Marshal(ret)
+	if err != nil {
+		status = http.StatusInternalServerError
+		return
+	}
+
+	//
+	// Send it - note the `callback` usage, as we're JSONP.
+	//
+	res.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(res, "%s(%s)", "callback", jsonString)
+}
+
 //
 // SendSpamResult informs the caller of a SPAM result.
 //
@@ -705,11 +778,15 @@ func serve(host string, port int) {
 	router.HandleFunc("/stats", StatsHandler).Methods("POST")
 	router.HandleFunc("/stats/", StatsHandler).Methods("POST")
 	//
-	//  4.  Classify/Train comments
+	//  4.  Classify/Train comments (nop).
 	//
 	router.HandleFunc("/classify", ClassifyHandler).Methods("POST")
 	router.HandleFunc("/classify/", ClassifyHandler).Methods("POST")
 	//
+	//  5. Global stats
+	//
+	router.HandleFunc("/global-stats", GlobalStatsHandler).Methods("GET")
+	router.HandleFunc("/global-stats/", GlobalStatsHandler).Methods("GET")
 
 	//
 	// Bind the router.
