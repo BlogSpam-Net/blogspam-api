@@ -35,6 +35,7 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	_ "github.com/skx/golang-metrics"
 )
 
 //
