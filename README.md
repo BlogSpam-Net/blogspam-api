@@ -1,6 +1,6 @@
-[![Travis CI](https://img.shields.io/travis/BlogSpam-net/blogspam-api/master.svg?style=flat-square)](https://travis-ci.org/BlogSpam-net/blogspam-api)
-[![Go Report Card](https://goreportcard.com/badge/github.com/BlogSpam-net/blogspam-api)](https://goreportcard.com/report/github.com/BlogSpam-net/blogspam-api)
-[![license](https://img.shields.io/github/license/BlogSpam-net/blogspam-api.svg)](https://github.com/BlogSpam-net/blogspam-api/blob/master/LICENSE)
+[![Travis CI](https://img.shields.io/travis/BlogSpam-Net/blogspam-api/master.svg?style=flat-square)](https://travis-ci.org/BlogSpam-Net/blogspam-api)
+[![Go Report Card](https://goreportcard.com/badge/github.com/BlogSpam-Net/blogspam-api)](https://goreportcard.com/report/github.com/BlogSpam-net/blogspam-api)
+[![license](https://img.shields.io/github/license/BlogSpam-Net/blogspam-api.svg)](https://github.com/BlogSpam-net/blogspam-api/blob/master/LICENSE)
 
 
 # Golang BlogSpam Server
