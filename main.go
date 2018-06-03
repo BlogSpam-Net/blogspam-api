@@ -23,9 +23,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/go-redis/redis"
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"os"
@@ -34,6 +31,10 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/go-redis/redis"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 )
 
 //
@@ -317,7 +318,6 @@ func StatsHandler(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(res, "%s", jsonString)
 }
 
-
 //
 // GlboalStatsHandler is a HTTP-handler which should return the global
 // count of spam vs. ham.
@@ -353,7 +353,7 @@ func GlobalStatsHandler(res http.ResponseWriter, req *http.Request) {
 	// update our map.
 	//
 	if redisHandle != nil {
-		spamCount, err := redisHandle.Get("global-spam" ).Result()
+		spamCount, err := redisHandle.Get("global-spam").Result()
 		if err != nil {
 			ret["error"] = err.Error()
 		} else {
@@ -387,7 +387,7 @@ func GlobalStatsHandler(res http.ResponseWriter, req *http.Request) {
 	// Send it.
 	//
 	res.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(res, "%s",  jsonString)
+	fmt.Fprintf(res, "%s", jsonString)
 }
 
 //
@@ -422,7 +422,7 @@ func SendSpamResult(res http.ResponseWriter, input Submission, plugin BlogspamPl
 	ret["version"] = "2.0"
 
 	//
-	// Covert the temporary hash to a JSON-object.
+	// Convert the temporary hash to a JSON-object.
 	//
 	jsonString, err := json.Marshal(ret)
 	if err != nil {
