@@ -319,8 +319,7 @@ func StatsHandler(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(res, "%s", jsonString)
 }
 
-//
-// GlboalStatsHandler is a HTTP-handler which should return the global
+// GlobalStatsHandler is a HTTP-handler which should return the global
 // count of spam vs. ham.
 //
 func GlobalStatsHandler(res http.ResponseWriter, req *http.Request) {
